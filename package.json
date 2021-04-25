@@ -1,0 +1,29 @@
+{
+  "name": "Geese-Shooter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack --watch --mode=development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hongchris96/Geese-Shooter.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hongchris96/Geese-Shooter/issues"
+  },
+  "homepage": "https://github.com/hongchris96/Geese-Shooter#readme",
+  "dependencies": {
+    "webpack": "^5.35.1"
+  },
+  "devDependencies": {
+    "file-loader": "^6.2.0",
+    "url-loader": "^4.1.1",
+    "webpack-cli": "^4.6.0"
+  }
+}
