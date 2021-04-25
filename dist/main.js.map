@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://Geese-Shooter/./src/index.js"],"names":[],"mappings":";;;;;AAAA,mC","file":"main.js","sourcesContent":["console.log(\"Webpack is working!\");"],"sourceRoot":""}
