@@ -1,3 +1,5 @@
+const GameView = require('./classes/game_view');
+
 const MovingObject = require('./classes/moving_object');
 const Goose = require('./classes/goose');
 
@@ -8,9 +10,13 @@ document.addEventListener("DOMContentLoaded", (e) => {
   // testing
   window.MovingObject = MovingObject;
   window.cntx = cntx;
-  const x = new MovingObject({pos: [300, 500], velo:[2, 3], radius: 10, color: "red"});
-  x.draw(cntx);
-
-  const goo = new Goose({pos: [10, 200]});
-  goo.draw(cntx);
+  window.GameView = GameView;
+  // const x = new MovingObject({pos: [300, 530], velo:[2, 3], radius: 10, color: "red"});
+  // x.draw(cntx);
+  // const goo = new Goose({pos: [10, 200]});
+  // goo.draw(cntx);
+  // -------
+  
+  const zaGame = new GameView(cntx);
+  zaGame.start();
 });

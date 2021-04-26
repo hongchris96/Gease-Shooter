@@ -5,7 +5,7 @@ const Util = {
   },
   randomVec(length) {
     const deg = Math.random() < 0.5 ? 0 : Math.PI;
-    return Util.scale([Math.sin(deg), Math.cos(deg)], length);
+    return Util.scale([Math.cos(deg), Math.sin(deg)], length);
   }
 };
 
