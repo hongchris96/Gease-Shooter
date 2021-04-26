@@ -16,6 +16,21 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./src/assets/images/goose_sprites.png":
+/*!*********************************************!*\
+  !*** ./src/assets/images/goose_sprites.png ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__webpack_require__.p + "17e5ceb5674abd353be3160fcef0551b.png");
+
+/***/ }),
+
 /***/ "./src/classes/game.js":
 /*!*****************************!*\
   !*** ./src/classes/game.js ***!
@@ -25,7 +40,7 @@ __webpack_require__.r(__webpack_exports__);
 const Goose = __webpack_require__(/*! ./goose */ "./src/classes/goose.js");
 
 class Game {
-  constructor() {
+  constructor(options) {
     this.DIM_X = 900;
     this.DIM_Y = 550;
     this.NUM_GEESE = 5;
@@ -89,8 +104,8 @@ const Game = __webpack_require__(/*! ./game */ "./src/classes/game.js");
 
 class GameView {
   constructor(cntx) {
-    this.game = new Game();
     this.cntx = cntx;
+    this.game = new Game();
   }
 
   start() {
@@ -113,18 +128,33 @@ module.exports = GameView;
 
 const MovingObject = __webpack_require__(/*! ./moving_object */ "./src/classes/moving_object.js");
 const Util = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
+const Sprite = __webpack_require__(/*! ../utils/sprite */ "./src/utils/sprite.js");
+const GooseSpriteImg = __webpack_require__(/*! ../assets/images/goose_sprites.png */ "./src/assets/images/goose_sprites.png");
 
 class Goose extends MovingObject {
   constructor(options) {
     super(options);
-
     this.velo = Util.randomVec(2);
     this.color = 'blue';
     this.radius = 10;
+    this.cntx = options.cntx;
+    this.img = new Image();
+    this.img.src = GooseSpriteImg;
+    this.gooseSprites = new Sprite({
+      img: this.img,
+      sx: this.sx,
+      sy: this.sy,
+      sw: this.sw,
+      sh: this.sh,
+      dx: this.dx,
+      dy: this.dy,
+      dw: this.dw,
+      dh: this.dh
+    });
   }
 
   draw(cntx) {
-    return super.draw(cntx);
+    return this.gooseSprites.drawSprite(cntx);
   }
 
   move() {
@@ -153,15 +183,15 @@ class MovingObject {
     this.game = options.game;
   }
 
-  draw(cntx) {
-    cntx.beginPath();
-    cntx.arc(this.pos[0], this.pos[1], this.radius, 0, Math.PI * 2, true);
-    cntx.fillStyle = this.color;
-    cntx.fill();
-    cntx.strokeStyle = 'black';
-    cntx.lineWidth = 2;
-    cntx.stroke();
-  }
+  // draw(cntx) {
+    // cntx.beginPath();
+    // cntx.arc(this.pos[0], this.pos[1], this.radius, 0, Math.PI * 2, true);
+    // cntx.fillStyle = this.color;
+    // cntx.fill();
+    // cntx.strokeStyle = 'black';
+    // cntx.lineWidth = 2;
+    // cntx.stroke();
+  // }
 
   move() {
     this.pos[0] += this.velo[0];
@@ -172,6 +202,50 @@ class MovingObject {
 
 
 module.exports = MovingObject;
+
+/***/ }),
+
+/***/ "./src/utils/sprite.js":
+/*!*****************************!*\
+  !*** ./src/utils/sprite.js ***!
+  \*****************************/
+/***/ ((module) => {
+
+// const GooseSpriteImg = require('../assets/images/goose_sprites.png');
+
+// const images = {};
+// images.goose = new Image();
+// images.goose.src = GooseSpriteImg;
+
+// 2640 × 1980
+// 660 × 660
+
+// const gooseWidth = '660';
+// const gooseHeight = '660';
+// let gooseFrameX = 2;
+// let gooseFrameY = 2;
+
+class Sprite {
+  // s is source image, d is destination canvas
+  constructor(options) {
+    this.cntx = options.cntx;
+    this.img = options.img;
+    this.sx = options.sx
+    this.sy = options.sy
+    this.sw = options.sw
+    this.sh = options.sh
+    this.dx = options.dx
+    this.dy = options.dy
+    this.dw = options.dw
+    this.dh = options.dh  
+  }
+
+  drawSprite(cntx) {
+    cntx.drawImage(this.img, this.sx, this.sy, this.sw, this.sh, this.dx, this.dy, this.dw, this.dh)
+  }
+}
+
+module.exports = Sprite;
 
 /***/ }),
 

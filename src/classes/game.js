@@ -1,7 +1,7 @@
 const Goose = require('./goose');
 
 class Game {
-  constructor() {
+  constructor(options) {
     this.DIM_X = 900;
     this.DIM_Y = 550;
     this.NUM_GEESE = 5;

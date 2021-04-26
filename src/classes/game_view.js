@@ -2,8 +2,8 @@ const Game = require('./game');
 
 class GameView {
   constructor(cntx) {
-    this.game = new Game();
     this.cntx = cntx;
+    this.game = new Game();
   }
 
   start() {
