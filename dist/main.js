@@ -76,8 +76,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
   // testing
   window.cntx = cntx;
-  const x = new MovingObject({pos: [300,300], velo:[2,3], radius: 5, color: "red"});
+  const x = new MovingObject({pos: [200, 200], velo:[2, 3], radius: 10, color: "red"});
   x.draw(cntx);
+
 });
 })();
 
