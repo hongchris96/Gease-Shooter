@@ -6,7 +6,7 @@ class MovingObject {
     this.velo = options.velo;
     this.radius = options.radius;
     this.color = options.color;
-    // this.game = options.game;
+    this.game = options.game;
   }
 
   draw(cntx) {
@@ -22,6 +22,7 @@ class MovingObject {
   move() {
     this.pos[0] += this.velo[0];
     this.pos[1] += this.velo[1];
+    this.pos = this.game.wrap(this.pos);
   }
 }
 

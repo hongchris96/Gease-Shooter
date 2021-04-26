@@ -13,14 +13,14 @@ class Game {
 
   addGoose() {
     for (let i = 0; i < this.NUM_GEESE; i++) {
-      let newGoose = new Goose({pos: this.randomPos()});
+      let newGoose = new Goose({pos: this.randomPos(), game: this});
       this.geese.push(newGoose);
     }
   }
 
   randomPos() {
     let x = Math.random() > 0.5 ? 0 : this.DIM_X; 
-    let y = Math.random() * this.DIM_Y;
+    let y = Math.random() * this.DIM_Y - 20;
     return [x, y]; 
   }
 
@@ -33,6 +33,20 @@ class Game {
 
   moveObjects() {
     this.geese.forEach(goose => goose.move());
+  }
+
+  wrap(pos) {
+    let x = pos[0];
+    let y = pos[1];
+    if (pos[0] > this.DIM_X) { 
+      x -= this.DIM_X; 
+      y = Math.random() * this.DIM_Y;
+    }
+    else if (pos[0] < 0) {
+      x += this.DIM_X;
+      y = Math.random() * this.DIM_Y;
+    }
+    return [x, y];
   }
 
 }
