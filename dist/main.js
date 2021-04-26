@@ -1,6 +1,33 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/classes/goose.js":
+/*!******************************!*\
+  !*** ./src/classes/goose.js ***!
+  \******************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const MovingObject = __webpack_require__(/*! ./moving_object */ "./src/classes/moving_object.js");
+const Util = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
+
+class Goose extends MovingObject {
+  constructor(options) {
+    super(options);
+
+    this.vel = Util.randomVec(5);
+    this.color = 'blue';
+    this.radius = 10;
+  }
+
+  draw(cntx) {
+    return super.draw(cntx);
+  }
+}
+
+module.exports = Goose;
+
+/***/ }),
+
 /***/ "./src/classes/moving_object.js":
 /*!**************************************!*\
   !*** ./src/classes/moving_object.js ***!
@@ -27,10 +54,36 @@ class MovingObject {
     cntx.lineWidth = 2;
     cntx.stroke();
   }
+
+  move() {
+    this.pos[0] += this.velo[0];
+    this.pos[1] += this.velo[1];
+  }
 }
 
 
 module.exports = MovingObject;
+
+/***/ }),
+
+/***/ "./src/utils/utils.js":
+/*!****************************!*\
+  !*** ./src/utils/utils.js ***!
+  \****************************/
+/***/ ((module) => {
+
+
+const Util = {
+  scale(vec, mag){
+    return [vec[0] * mag, vec[1] * mag];
+  },
+  randomVec(length) {
+    const deg = Math.random() < 0.5 ? 0 : Math.PI;
+    return Util.scale([Math.sin(deg), Math.cos(deg)], length);
+  }
+};
+
+module.exports = Util;
 
 /***/ })
 
@@ -68,17 +121,20 @@ var __webpack_exports__ = {};
   !*** ./src/index.js ***!
   \**********************/
 const MovingObject = __webpack_require__(/*! ./classes/moving_object */ "./src/classes/moving_object.js");
-window.MovingObject = MovingObject;
+const Goose = __webpack_require__(/*! ./classes/goose */ "./src/classes/goose.js");
 
 document.addEventListener("DOMContentLoaded", (e) => {
   const kanvas = document.getElementById("game-canvas");
   const cntx = kanvas.getContext("2d");
-
+  
   // testing
+  window.MovingObject = MovingObject;
   window.cntx = cntx;
-  const x = new MovingObject({pos: [200, 200], velo:[2, 3], radius: 10, color: "red"});
+  const x = new MovingObject({pos: [300, 500], velo:[2, 3], radius: 10, color: "red"});
   x.draw(cntx);
 
+  const goo = new Goose({pos: [10, 200]});
+  goo.draw(cntx);
 });
 })();
 

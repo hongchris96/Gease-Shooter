@@ -18,6 +18,11 @@ class MovingObject {
     cntx.lineWidth = 2;
     cntx.stroke();
   }
+
+  move() {
+    this.pos[0] += this.velo[0];
+    this.pos[1] += this.velo[1];
+  }
 }
 
 
