@@ -5,7 +5,7 @@ class Goose extends MovingObject {
   constructor(options) {
     super(options);
 
-    this.velo = Util.randomVec(3);
+    this.velo = Util.randomVec(2);
     this.color = 'blue';
     this.radius = 10;
   }

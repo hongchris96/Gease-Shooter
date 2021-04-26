@@ -6,7 +6,7 @@ const Goose = require('./classes/goose');
 document.addEventListener("DOMContentLoaded", (e) => {
   const kanvas = document.getElementById("game-canvas");
   const cntx = kanvas.getContext("2d");
-  
+
   // testing
   window.MovingObject = MovingObject;
   window.cntx = cntx;

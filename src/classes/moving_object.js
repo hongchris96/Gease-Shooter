@@ -1,4 +1,4 @@
-
+const gooseImage = require('../assets/images/goose-air-left.gif')
 
 class MovingObject {
   constructor(options) {
