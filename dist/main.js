@@ -273,7 +273,7 @@ class Robot {
     this.img.onload = () => this.draw();
   }
   
-  draw(dirArray){
+  draw(dirArray) {
     let firstTwoKeys = dirArray.slice(0, 2);
     if (firstTwoKeys.includes("left")) {
       if (this.pos[1] < 400) {
@@ -315,7 +315,7 @@ class Robot {
       this.pos[0], this.pos[1], this.width * 0.15, this.height * 0.15);
   }
 
-  move(dirArray){
+  move(dirArray) {
     console.log(dirArray);
     if (dirArray.length === 1){
       switch(dirArray[0]) {
