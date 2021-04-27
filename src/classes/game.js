@@ -1,4 +1,5 @@
 const Goose = require('./goose');
+const Util = require('../utils/utils');
 
 class Game {
   constructor(options) {
@@ -19,8 +20,8 @@ class Game {
   }
 
   randomPos() {
-    let x = Math.random() > 0.5 ? 0 : this.DIM_X; 
-    let y = Math.random() * this.DIM_Y - 20;
+    let x = Math.random() > 0.5 ? -99 : this.DIM_X + 99; 
+    let y = Math.random() * this.DIM_Y - 70;
     return [x, y]; 
   }
 
@@ -32,21 +33,26 @@ class Game {
   }
 
   moveObjects() {
-    this.geese.forEach(goose => goose.move());
+    this.geese.forEach(goose => {
+      goose.move();
+    });
   }
 
-  wrap(pos) {
+  wrap(pos, vel) {
     let x = pos[0];
     let y = pos[1];
+    let newVel = vel;
     if (pos[0] > this.DIM_X) { 
-      x -= this.DIM_X; 
-      y = Math.random() * this.DIM_Y;
+      x -= this.DIM_X + 99; 
+      y = Math.random() * this.DIM_Y - 70;
+      newVel = Util.randomVec(2);
     }
-    else if (pos[0] < 0) {
-      x += this.DIM_X;
-      y = Math.random() * this.DIM_Y;
+    else if (pos[0] < -99) {
+      x += this.DIM_X + 99;
+      y = Math.random() * this.DIM_Y - 70;
+      newVel = Util.randomVec(2);
     }
-    return [x, y];
+    return [[x, y], newVel];
   }
 
 }

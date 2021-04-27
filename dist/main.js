@@ -1,36 +1,6 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/assets/images/goose-air-left.gif":
-/*!**********************************************!*\
-  !*** ./src/assets/images/goose-air-left.gif ***!
-  \**********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__webpack_require__.p + "197bb6572642d917420bd67dcd6e4177.gif");
-
-/***/ }),
-
-/***/ "./src/assets/images/goose_sprites.png":
-/*!*********************************************!*\
-  !*** ./src/assets/images/goose_sprites.png ***!
-  \*********************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (__webpack_require__.p + "17e5ceb5674abd353be3160fcef0551b.png");
-
-/***/ }),
-
 /***/ "./src/classes/game.js":
 /*!*****************************!*\
   !*** ./src/classes/game.js ***!
@@ -38,6 +8,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 const Goose = __webpack_require__(/*! ./goose */ "./src/classes/goose.js");
+const Util = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
 
 class Game {
   constructor(options) {
@@ -58,8 +29,8 @@ class Game {
   }
 
   randomPos() {
-    let x = Math.random() > 0.5 ? 0 : this.DIM_X; 
-    let y = Math.random() * this.DIM_Y - 20;
+    let x = Math.random() > 0.5 ? -99 : this.DIM_X + 99; 
+    let y = Math.random() * this.DIM_Y - 70;
     return [x, y]; 
   }
 
@@ -71,21 +42,26 @@ class Game {
   }
 
   moveObjects() {
-    this.geese.forEach(goose => goose.move());
+    this.geese.forEach(goose => {
+      goose.move();
+    });
   }
 
-  wrap(pos) {
+  wrap(pos, vel) {
     let x = pos[0];
     let y = pos[1];
+    let newVel = vel;
     if (pos[0] > this.DIM_X) { 
-      x -= this.DIM_X; 
-      y = Math.random() * this.DIM_Y;
+      x -= this.DIM_X + 99; 
+      y = Math.random() * this.DIM_Y - 70;
+      newVel = Util.randomVec(2);
     }
-    else if (pos[0] < 0) {
-      x += this.DIM_X;
-      y = Math.random() * this.DIM_Y;
+    else if (pos[0] < -99) {
+      x += this.DIM_X + 99;
+      y = Math.random() * this.DIM_Y - 70;
+      newVel = Util.randomVec(2);
     }
-    return [x, y];
+    return [[x, y], newVel];
   }
 
 }
@@ -126,126 +102,97 @@ module.exports = GameView;
   \******************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-const MovingObject = __webpack_require__(/*! ./moving_object */ "./src/classes/moving_object.js");
 const Util = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
-const Sprite = __webpack_require__(/*! ../utils/sprite */ "./src/utils/sprite.js");
-const GooseSpriteImg = __webpack_require__(/*! ../assets/images/goose_sprites.png */ "./src/assets/images/goose_sprites.png");
+// const GooseImage = require('../assets/images/goose_sprites.png');
 
-class Goose extends MovingObject {
-  constructor(options) {
-    super(options);
-    this.velo = Util.randomVec(2);
-    this.color = 'blue';
-    this.radius = 10;
-    this.cntx = options.cntx;
+const canvas = document.getElementById('game-canvas');
+const cntx = canvas.getContext('2d');
+
+
+class Goose {
+  constructor(options){
+    this.width = 660;
+    this.height = 660;
+    this.pos = options.pos;
+    this.vel = Util.randomVec(2);
+    this.game = options.game;
+    this.leftAirFrames = [[3, 1], [3, 2]];
+    this.rightAirFrames = [[3, 0], [2, 2]];
+    this.leftGroundFrames = [[0, 2], [1, 2], [2, 0], [2, 1]];
+    this.rightGroundFrames = [[0, 0], [1, 0], [0, 1], [1, 1]];
+    this.counter = 0;
+    this.frameCount = 0;
     this.img = new Image();
-    this.img.src = GooseSpriteImg;
-    this.gooseSprites = new Sprite({
-      img: this.img,
-      sx: this.sx,
-      sy: this.sy,
-      sw: this.sw,
-      sh: this.sh,
-      dx: this.dx,
-      dy: this.dy,
-      dw: this.dw,
-      dh: this.dh
-    });
+    this.img.src = "../src/assets/images/goose_sprites.png";
+
+    if (this.vel[0] < 0) {
+      if (this.pos[1] < 400) {
+        this.frameX = this.leftAirFrames[0][0];
+        this.frameY = this.leftAirFrames[0][1];
+      } else {
+        this.frameX = this.leftGroundFrames[0][0];
+        this.frameY = this.leftGroundFrames[0][1];
+      }
+    } else {
+      if (this.pos[1] < 400) {
+        this.frameX = this.rightAirFrames[0][0];
+        this.frameY = this.rightAirFrames[0][1];
+      } else {
+        this.frameX = this.rightGroundFrames[0][0];
+        this.frameY = this.rightGroundFrames[0][1];
+      }
+    }
+
+    this.img.onload = () => this.draw();
+  }
+  
+  draw(cntx){
+    this.frameCount += 1;
+    if (this.frameCount === 12) {
+      this.frameCount = 0;
+      this.counter += 1;
+      if (this.vel[0] < 0) {
+        if (this.pos[1] < 400) {
+          this.frameX = this.leftAirFrames[this.counter % 2][0];
+          this.frameY = this.leftAirFrames[this.counter % 2][1];
+        } else {
+          this.frameX = this.leftGroundFrames[this.counter % 4][0];
+          this.frameY = this.leftGroundFrames[this.counter % 4][1];
+        }
+      } else {
+        if (this.pos[1] < 400) {
+          this.frameX = this.rightAirFrames[this.counter % 2][0];
+          this.frameY = this.rightAirFrames[this.counter % 2][1];
+        } else {
+          this.frameX = this.rightGroundFrames[this.counter % 4][0];
+          this.frameY = this.rightGroundFrames[this.counter % 4][1];
+        }
+      }
+    }
+    drawSprite(this.img, this.width * this.frameX, this.height * this.frameY, this.width, this.height,
+      this.pos[0], this.pos[1], this.width * 0.15, this.height * 0.15);
+  }
+  move(){
+    this.pos[0] += this.vel[0];
+    this.pos[1] += this.vel[1];
+    let newVal = this.game.wrap(this.pos, this.vel);
+    this.pos = newVal[0];
+    this.vel = newVal[1];
   }
 
-  draw(cntx) {
-    return this.gooseSprites.drawSprite(cntx);
-  }
-
-  move() {
-    return super.move();
-  }
 }
+
+function drawSprite(img, sX, sY, sW, sH, dX, dY, dW, dH){
+  cntx.drawImage(img, sX, sY, sW, sH, dX, dY, dW, dH);
+}
+
+// function animate(){
+//   cntx.clearRect(0, 0, canvas.width, canvas.height);
+//   newgoose[i].draw();
+//   newgoose[i].move();
+// }
 
 module.exports = Goose;
-
-/***/ }),
-
-/***/ "./src/classes/moving_object.js":
-/*!**************************************!*\
-  !*** ./src/classes/moving_object.js ***!
-  \**************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-const gooseImage = __webpack_require__(/*! ../assets/images/goose-air-left.gif */ "./src/assets/images/goose-air-left.gif")
-
-class MovingObject {
-  constructor(options) {
-    this.pos = options.pos;
-    this.velo = options.velo;
-    this.radius = options.radius;
-    this.color = options.color;
-    this.game = options.game;
-  }
-
-  // draw(cntx) {
-    // cntx.beginPath();
-    // cntx.arc(this.pos[0], this.pos[1], this.radius, 0, Math.PI * 2, true);
-    // cntx.fillStyle = this.color;
-    // cntx.fill();
-    // cntx.strokeStyle = 'black';
-    // cntx.lineWidth = 2;
-    // cntx.stroke();
-  // }
-
-  move() {
-    this.pos[0] += this.velo[0];
-    this.pos[1] += this.velo[1];
-    this.pos = this.game.wrap(this.pos);
-  }
-}
-
-
-module.exports = MovingObject;
-
-/***/ }),
-
-/***/ "./src/utils/sprite.js":
-/*!*****************************!*\
-  !*** ./src/utils/sprite.js ***!
-  \*****************************/
-/***/ ((module) => {
-
-// const GooseSpriteImg = require('../assets/images/goose_sprites.png');
-
-// const images = {};
-// images.goose = new Image();
-// images.goose.src = GooseSpriteImg;
-
-// 2640 × 1980
-// 660 × 660
-
-// const gooseWidth = '660';
-// const gooseHeight = '660';
-// let gooseFrameX = 2;
-// let gooseFrameY = 2;
-
-class Sprite {
-  // s is source image, d is destination canvas
-  constructor(options) {
-    this.cntx = options.cntx;
-    this.img = options.img;
-    this.sx = options.sx
-    this.sy = options.sy
-    this.sw = options.sw
-    this.sh = options.sh
-    this.dx = options.dx
-    this.dy = options.dy
-    this.dw = options.dw
-    this.dh = options.dh  
-  }
-
-  drawSprite(cntx) {
-    cntx.drawImage(this.img, this.sx, this.sy, this.sw, this.sh, this.dx, this.dy, this.dw, this.dh)
-  }
-}
-
-module.exports = Sprite;
 
 /***/ }),
 
@@ -297,67 +244,6 @@ module.exports = Util;
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/global */
-/******/ 	(() => {
-/******/ 		__webpack_require__.g = (function() {
-/******/ 			if (typeof globalThis === 'object') return globalThis;
-/******/ 			try {
-/******/ 				return this || new Function('return this')();
-/******/ 			} catch (e) {
-/******/ 				if (typeof window === 'object') return window;
-/******/ 			}
-/******/ 		})();
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__webpack_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/publicPath */
-/******/ 	(() => {
-/******/ 		var scriptUrl;
-/******/ 		if (__webpack_require__.g.importScripts) scriptUrl = __webpack_require__.g.location + "";
-/******/ 		var document = __webpack_require__.g.document;
-/******/ 		if (!scriptUrl && document) {
-/******/ 			if (document.currentScript)
-/******/ 				scriptUrl = document.currentScript.src
-/******/ 			if (!scriptUrl) {
-/******/ 				var scripts = document.getElementsByTagName("script");
-/******/ 				if(scripts.length) scriptUrl = scripts[scripts.length - 1].src
-/******/ 			}
-/******/ 		}
-/******/ 		// When supporting browsers where an automatic publicPath is not supported you must specify an output.publicPath manually via configuration
-/******/ 		// or pass an empty string ("") and set the __webpack_public_path__ variable from your code to use your own logic.
-/******/ 		if (!scriptUrl) throw new Error("Automatic publicPath is not supported in this browser");
-/******/ 		scriptUrl = scriptUrl.replace(/#.*$/, "").replace(/\?.*$/, "").replace(/\/[^\/]+$/, "/");
-/******/ 		__webpack_require__.p = scriptUrl;
-/******/ 	})();
-/******/ 	
-/************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
@@ -365,8 +251,6 @@ var __webpack_exports__ = {};
   !*** ./src/index.js ***!
   \**********************/
 const GameView = __webpack_require__(/*! ./classes/game_view */ "./src/classes/game_view.js");
-
-const MovingObject = __webpack_require__(/*! ./classes/moving_object */ "./src/classes/moving_object.js");
 const Goose = __webpack_require__(/*! ./classes/goose */ "./src/classes/goose.js");
 
 document.addEventListener("DOMContentLoaded", (e) => {
@@ -374,13 +258,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
   const cntx = kanvas.getContext("2d");
 
   // testing
-  window.MovingObject = MovingObject;
-  window.cntx = cntx;
-  window.GameView = GameView;
-  // const x = new MovingObject({pos: [300, 530], velo:[2, 3], radius: 10, color: "red"});
-  // x.draw(cntx);
-  // const goo = new Goose({pos: [10, 200]});
-  // goo.draw(cntx);
+
   // -------
   
   const zaGame = new GameView(cntx);
