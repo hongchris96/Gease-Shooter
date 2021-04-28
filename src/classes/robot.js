@@ -23,6 +23,7 @@ class Robot {
     this.frameX = this.rightGroundFrames[0];
     this.frameY = this.rightGroundFrames[1];
     this.weapon = 'pistol';
+    this.laserStatus = false;
     this.img.onload = () => this.draw();
   }
   
@@ -66,6 +67,23 @@ class Robot {
 
     drawSprite(this.img, this.width * this.frameX, this.height * this.frameY, this.width, this.height,
       this.pos[0], this.pos[1], this.width * 0.15, this.height * 0.15);
+    if (this.laserStatus) {
+      let laserPos;
+      let lineDir;
+      if (this.frameX === this.leftAirFrames[0] || this.frameX === this.leftGroundFrames[0]) {
+        laserPos = [this.pos[0] + 35, this.pos[1] + 65];
+        lineDir = [0 ,laserPos[1]]
+      } else if (this.frameX === this.rightAirFrames[0] || this.frameX === this.rightGroundFrames[0]) {
+        laserPos = [this.pos[0] + 100, this.pos[1] + 65];
+        lineDir = [900, laserPos[1]];
+      }
+      cntx.beginPath();
+      cntx.moveTo(laserPos[0], laserPos[1]);
+      cntx.lineTo(...lineDir);
+      cntx.lineWidth = 5;
+      cntx.strokeStyle = '#ff0000';
+      cntx.stroke();
+    }
   }
 
   move(dirArray) {
@@ -171,6 +189,26 @@ class Robot {
     this.game.addRocket(rocket);
   }
 
+  fireLaser() {
+    this.laserStatus = true;
+  }
+
+  turnOffLaser() {
+    this.laserStatus = false;
+  }
+
+  laserHit(target) {
+    const laserX = this.pos[0] + 65;
+    const laserY = this.pos[1] + 65;
+    const targetX = target.pos[0];
+    const targetY = target.pos[1];
+    if (this.frameX === this.leftAirFrames[0] || this.frameX === this.leftGroundFrames[0]) {
+      if (laserX >= targetX + 60 && laserY >= targetY && laserY < targetY + 80) return true;
+    } else if (this.frameX === this.rightAirFrames[0] || this.frameX === this.rightGroundFrames[0]) {
+      if (laserX < targetX && laserY >= targetY && laserY < targetY + 80) return true;
+    }
+    return false;
+  }
 }
 
 function drawSprite(img, sX, sY, sW, sH, dX, dY, dW, dH){

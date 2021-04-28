@@ -114,6 +114,13 @@ class Game {
         }
       }
     }
+    if (this.robo.laserStatus) {
+      for (let j = 0; j < geese.length; j++) {
+        if (this.robo.laserHit(this.geese[j])) {
+          this.removeGoose(this.geese[j]);
+        }
+      }
+    }
   }
 
   moveObjects() {
@@ -166,11 +173,16 @@ class Game {
         case "2":
           this.robo.switchWeapon('rocket');
           break;
+        case "3":
+          this.robo.switchWeapon('laser');
+          break;
         case " ":
           if (this.robo.weapon === 'pistol') {
             this.robo.fireBullet();
           } else if (this.robo.weapon === 'rocket') {
             this.robo.fireRocket();
+          } else if (this.robo.weapon === 'laser') {
+            this.robo.fireLaser();
           }
           break;
       }
@@ -192,6 +204,11 @@ class Game {
           break;
         case "d": 
           this.actionKeys = this.actionKeys.filter(ele => ele !== "right");
+          break;
+        case " ":
+          if (this.robo.weapon === "laser") {
+            this.robo.turnOffLaser();
+          }
           break;
       }
       this.robo.move(this.actionKeys);
