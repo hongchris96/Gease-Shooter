@@ -67,11 +67,10 @@ document.addEventListener("DOMContentLoaded", (e) => {
   musicIcon.addEventListener('click', () => {
     if (music.paused) {
       music.play();
-      musicIcon.src = "banana.png";
-      // "./assets/images/music_play_icon.png";
+      musicIcon.src = "./src/assets/images/music_play_icon.png";
     } else {
       music.pause();
-      musicIcon.src = "./assets/images/music_pause_icon.png";
+      musicIcon.src = "./src/assets/images/music_pause_icon.png";
     }
   });
 
