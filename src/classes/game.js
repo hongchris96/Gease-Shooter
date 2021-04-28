@@ -1,4 +1,6 @@
 const Goose = require('./goose');
+const Robo = require('./robot');
+const Bullet = require('./bullet');
 const Util = require('../utils/utils');
 
 class Game {
@@ -8,7 +10,9 @@ class Game {
     this.NUM_GEESE = 5;
     this.geese = [];
     this.addGoose();
-
+    this.bullets = [];
+    this.robo = new Robo({game: this});
+    this.actionKeys = [];
     this.randomPos = this.randomPos.bind(this);
   }
 
@@ -17,6 +21,14 @@ class Game {
       let newGoose = new Goose({pos: this.randomPos(), game: this});
       this.geese.push(newGoose);
     }
+  }
+
+  addBullet(bullet) {
+    this.bullets.push(bullet);
+  }
+
+  removeBullet() {
+    this.bullets.shift();
   }
 
   randomPos() {
@@ -30,12 +42,19 @@ class Game {
     for (let i = 0; i < this.geese.length; i++) {
       this.geese[i].draw(cntx);
     }
+    this.robo.draw(this.actionKeys);
+    for (let i = 0; i < this.bullets.length; i++) {
+      this.bullets[i].draw(cntx);
+    }
   }
 
   moveObjects() {
     this.geese.forEach(goose => {
       goose.move();
     });
+    this.bullets.forEach(bullet => {
+      bullet.move();
+    })
   }
 
   wrap(pos, vel) {
@@ -53,6 +72,49 @@ class Game {
       newVel = Util.randomVec(2);
     }
     return [[x, y], newVel];
+  }
+
+  addKeysListener() {
+    document.addEventListener("keydown", (e) => {
+      switch(e.key) {
+        case "w": 
+          if (!this.actionKeys.includes("up")) this.actionKeys.push('up');
+          break;
+        case "a": 
+          if (!this.actionKeys.includes("left")) this.actionKeys.push('left');
+          break;
+        case "s": 
+          if (!this.actionKeys.includes("down")) this.actionKeys.push('down');
+          break;
+        case "d": 
+          if (!this.actionKeys.includes("right")) this.actionKeys.push('right');
+          break;
+        case " ":
+          this.robo.fireBullet();
+          break;
+      }
+      this.robo.move(this.actionKeys);
+    });
+  }
+
+  removeKeysListener() {
+    document.addEventListener("keyup", (e) => {
+      switch(e.key) {
+        case "w": 
+          this.actionKeys = this.actionKeys.filter(ele => ele !== "up");
+          break;
+        case "a": 
+          this.actionKeys = this.actionKeys.filter(ele => ele !== "left");
+          break;
+        case "s": 
+          this.actionKeys = this.actionKeys.filter(ele => ele !== "down");
+          break;
+        case "d": 
+          this.actionKeys = this.actionKeys.filter(ele => ele !== "right");
+          break;
+      }
+      this.robo.move(this.actionKeys);
+    });
   }
 
 }

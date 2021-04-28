@@ -4,6 +4,8 @@ class GameView {
   constructor(cntx) {
     this.cntx = cntx;
     this.game = new Game();
+    this.game.addKeysListener();
+    this.game.removeKeysListener();
   }
 
   start() {
