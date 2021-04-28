@@ -1,3 +1,8 @@
+@font-face {
+  font-family: WW;
+  src: url("../fonts/good times rg.ttf") format("truetype");
+}
+
 body {
   background-image: url('../images/world_background.jpeg');
   background-size: auto;
@@ -6,9 +11,29 @@ body {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  font-family: WW;
+}
+
+header.title-sign {
+  position: absolute;
+  font-size: 50px;
+  cursor: pointer;
+  text-shadow: 0 0 40px rgb(255, 255, 255);
+}
+
+p.catchphrases {
+  position: absolute;
+  text-align: center;
+  font-size: 25px;
+  text-shadow: 0 0 20px white;
+}
+
+ul.pre-menu {
+  position: absolute;
 }
 
 #game-canvas {
+  position: absolute;
   width: 900px;
   height: 550px;
   border: 5px solid rgb(46, 46, 46);
@@ -16,5 +41,17 @@ body {
   box-shadow: 0 0 100px rgb(0, 229, 255);
   background-image: url('../images/Forest.png');
   background-position: 50%;
+}
+
+.fade-in {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 800ms;
+}
+
+.hidden {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 500ms, opacity 500ms
 }
 
