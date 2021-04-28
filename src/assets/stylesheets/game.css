@@ -21,6 +21,12 @@ header.title-sign {
   text-shadow: 0 0 40px rgb(255, 255, 255);
 }
 
+header.title-sign:hover {
+  font-size: 52px;
+  text-shadow: 0 0 40px rgb(0, 208, 255);
+  transition: 0.5s;
+}
+
 p.catchphrases {
   position: absolute;
   text-align: center;
@@ -30,6 +36,70 @@ p.catchphrases {
 
 ul.pre-menu {
   position: absolute;
+  width: 300px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  text-shadow: 0 0 20px white;
+}
+
+ul.pre-menu > li:hover {
+  font-size: 20px;
+  text-shadow: 0 0 10px rgb(21, 255, 53);
+}
+
+li.start-game {
+  position: absolute;
+  top: 70px;
+  cursor: pointer;
+}
+
+li.instruction {
+  position: absolute;
+  cursor: pointer;
+  bottom: 70px;
+}
+
+article.controls {
+  width: 900px;
+  height: 550px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  background-color: rgba(255, 255, 255, 0.577);
+  border-radius: 5px;
+  box-shadow: 0 0 20px rgb(203, 203, 203);
+  font-size: 16px;
+}
+
+article.controls > h1 {
+  font-size: 24px;
+  margin: 10px;
+}
+
+article.controls > p {
+  line-height: 1.2;
+  text-align: center;
+  width: 800px;
+}
+
+article.controls > img {
+  width: 50%;
+  height: auto;
+}
+
+article.controls > p.go-back {
+  cursor: pointer;
+  width: fit-content;
+}
+
+article.controls > p.go-back:hover {
+  color:rgb(42, 175, 223);
+  text-shadow: 0 0 15px rgb(56, 194, 244);
 }
 
 #game-canvas {
