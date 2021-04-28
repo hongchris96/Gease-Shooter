@@ -854,8 +854,12 @@ var __webpack_exports__ = {};
 const GameView = __webpack_require__(/*! ./classes/game_view */ "./src/classes/game_view.js");
 const Goose = __webpack_require__(/*! ./classes/goose */ "./src/classes/goose.js");
 
-document.addEventListener("DOMContentLoaded", (e) => {
+document.addEventListener('load', () => {
+  document.getElementById('theme-music').play();
+});
   
+document.addEventListener("DOMContentLoaded", (e) => {
+    
   const title = document.querySelector('.title-sign');
   const phrases = document.querySelectorAll('.catchphrases');
   const menu = document.querySelector('.pre-menu');
@@ -863,9 +867,13 @@ document.addEventListener("DOMContentLoaded", (e) => {
   const instructionButton = document.querySelector('.instruction');
   const instructionPage = document.querySelector('.controls');
   const backToMenu = document.querySelector('.go-back');
-
+  const music = document.getElementById('theme-music');
+  const musicIcon = document.getElementById('music-icon');
+  
   const kanvas = document.getElementById("game-canvas");
   const cntx = kanvas.getContext("2d");
+
+  music.volume = 0.3;
 
   title.addEventListener('click', () => {
     title.classList.add('hidden');
@@ -907,6 +915,16 @@ document.addEventListener("DOMContentLoaded", (e) => {
       menu.classList.remove('hidden');
       menu.classList.add('fade-in');
     }, 1000);
+  });
+
+  musicIcon.addEventListener('click', () => {
+    if (music.paused) {
+      music.play();
+      musicIcon.src = "../src/assets/images/music_play_icon.png";
+    } else {
+      music.pause();
+      musicIcon.src = "../src/assets/images/music_pause_icon.png";
+    }
   });
 
 });
