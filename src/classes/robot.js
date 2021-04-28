@@ -68,7 +68,6 @@ class Robot {
   }
 
   move(dirArray) {
-    console.log(dirArray);
     if (dirArray.length === 1){
       switch(dirArray[0]) {
         case "left":

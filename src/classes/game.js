@@ -25,8 +25,8 @@ class Game {
 
   removeGoose(theGoose) {
     this.geese.splice(this.geese.indexOf(theGoose), 1);
-    // let newGoose = new Goose({pos: this.randomPos(), game: this});
-    // this.geese.push(newGoose);
+    let newGoose = new Goose({pos: this.randomPos(), game: this});
+    this.geese.push(newGoose);
   }
 
   addBullet(bullet) {
@@ -42,7 +42,7 @@ class Game {
   }
 
   randomPos() {
-    let x = Math.random() > 0.5 ? -99 : this.DIM_X + 99; 
+    let x = Math.random() > 0.5 ? -100 : this.DIM_X + 100; 
     let y = Math.random() * this.DIM_Y - 70;
     return [x, y]; 
   }
@@ -59,13 +59,16 @@ class Game {
   }
 
   checkCollision() {
-    // this.geese.forEach(goose => {
-    //   for (let i = 0; i < this.bullets.length; i++) {
-    //     if (goose.isCollidedWith(this.bullets[i])) {
-    //       goose.collideWith(this.bullets[i]);
-    //     }
-    //   }
-    // });
+    const geese = this.geese;
+    const bullets = this.bullets;
+    for (let i = 0; i < bullets.length; i++) {
+      for (let j = 0; j < geese.length; j++) {
+        if (this.bullets[i].hit(this.geese[j])) {
+          this.removeGoose(this.geese[j]);
+          this.removeBullet(this.bullets[i]);
+        }
+      }
+    }
   }
 
   moveObjects() {
@@ -81,13 +84,13 @@ class Game {
     let x = pos[0];
     let y = pos[1];
     let newVel = vel;
-    if (pos[0] > this.DIM_X) { 
-      x -= this.DIM_X + 99; 
+    if (pos[0] > this.DIM_X + 100) { 
+      x -= this.DIM_X + 200; 
       y = Math.random() * this.DIM_Y - 70;
       newVel = Util.randomVec(2);
     }
-    else if (pos[0] < -99) {
-      x += this.DIM_X + 99;
+    else if (pos[0] < -100) {
+      x += this.DIM_X + 100;
       y = Math.random() * this.DIM_Y - 70;
       newVel = Util.randomVec(2);
     }

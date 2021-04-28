@@ -40,6 +40,17 @@ class Bullet {
     }
   }
 
+  hit(target) {
+    const bulletX = this.pos[0];
+    const bulletY = this.pos[1];
+    const targetX = target.pos[0];
+    const targetY = target.pos[1];
+    if (bulletX >= targetX && bulletX < targetX + 100 && bulletY >= targetY && bulletY < targetY + 100) {
+      return true;
+    }
+    return false;
+  }
+
 }
 
 function drawSprite(img, sX, sY, sW, sH, dX, dY, dW, dH){
