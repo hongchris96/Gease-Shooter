@@ -82,10 +82,5 @@ function drawSprite(img, sX, sY, sW, sH, dX, dY, dW, dH){
   cntx.drawImage(img, sX, sY, sW, sH, dX, dY, dW, dH);
 }
 
-// function animate(){
-//   cntx.clearRect(0, 0, canvas.width, canvas.height);
-//   newgoose[i].draw();
-//   newgoose[i].move();
-// }
 
 module.exports = Goose;

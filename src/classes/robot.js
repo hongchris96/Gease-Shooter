@@ -131,9 +131,9 @@ class Robot {
   fireBullet() {
     let bulletVel;
     if (this.frameX === this.leftAirFrames[0] || this.frameX === this.leftGroundFrames[0]) {
-      bulletVel = [-40, 0];
+      bulletVel = [-12, 0];
     } else if (this.frameX === this.rightAirFrames[0] || this.frameX === this.rightGroundFrames[0]) {
-      bulletVel = [40, 0];
+      bulletVel = [12, 0];
     }
 
     let bulletPos = [this.pos[0] + 70, this.pos[1] + 50];
@@ -152,11 +152,5 @@ class Robot {
 function drawSprite(img, sX, sY, sW, sH, dX, dY, dW, dH){
   cntx.drawImage(img, sX, sY, sW, sH, dX, dY, dW, dH);
 }
-
-// function animate(){
-//   cntx.clearRect(0, 0, canvas.width, canvas.height);
-//   newgoose[i].draw();
-//   newgoose[i].move();
-// }
 
 module.exports = Robot;

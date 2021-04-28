@@ -43,9 +43,7 @@ class Bullet {
   move(){
     this.pos[0] += this.vel[0];
     this.pos[1] += this.vel[1];
-    // let newVal = this.game.wrap(this.pos, this.vel);
-    // this.pos = newVal[0];
-    // this.vel = newVal[1];
+
     if (this.pos[0] < 0 || this.pos[0] > 900 || this.pos[1] > 550 || this.pos[1] < 0) {
       this.game.removeBullet();
     }
@@ -57,11 +55,6 @@ function drawSprite(img, sX, sY, sW, sH, dX, dY, dW, dH){
   cntx.drawImage(img, sX, sY, sW, sH, dX, dY, dW, dH);
 }
 
-// function animate(){
-//   cntx.clearRect(0, 0, canvas.width, canvas.height);
-//   newgoose[i].draw();
-//   newgoose[i].move();
-// }
 
 module.exports = Bullet;
 
@@ -98,12 +91,22 @@ class Game {
     }
   }
 
+  removeGoose(theGoose) {
+    this.geese.splice(this.geese.indexOf(theGoose), 1);
+    // let newGoose = new Goose({pos: this.randomPos(), game: this});
+    // this.geese.push(newGoose);
+  }
+
   addBullet(bullet) {
     this.bullets.push(bullet);
   }
 
-  removeBullet() {
-    this.bullets.shift();
+  removeBullet(bullet) {
+    if (bullet === undefined) {
+      this.bullets.shift();
+    } else {
+      this.bullets.splice(this.bullets.indexOf(bullet), 1);
+    }
   }
 
   randomPos() {
@@ -121,6 +124,16 @@ class Game {
     for (let i = 0; i < this.bullets.length; i++) {
       this.bullets[i].draw(cntx);
     }
+  }
+
+  checkCollision() {
+    // this.geese.forEach(goose => {
+    //   for (let i = 0; i < this.bullets.length; i++) {
+    //     if (goose.isCollidedWith(this.bullets[i])) {
+    //       goose.collideWith(this.bullets[i]);
+    //     }
+    //   }
+    // });
   }
 
   moveObjects() {
@@ -217,6 +230,7 @@ class GameView {
   start() {
     setInterval(() => {
       this.game.moveObjects();
+      this.game.checkCollision();
       this.game.draw(this.cntx);
     }, 17);
   }
@@ -316,11 +330,6 @@ function drawSprite(img, sX, sY, sW, sH, dX, dY, dW, dH){
   cntx.drawImage(img, sX, sY, sW, sH, dX, dY, dW, dH);
 }
 
-// function animate(){
-//   cntx.clearRect(0, 0, canvas.width, canvas.height);
-//   newgoose[i].draw();
-//   newgoose[i].move();
-// }
 
 module.exports = Goose;
 
@@ -465,9 +474,9 @@ class Robot {
   fireBullet() {
     let bulletVel;
     if (this.frameX === this.leftAirFrames[0] || this.frameX === this.leftGroundFrames[0]) {
-      bulletVel = [-40, 0];
+      bulletVel = [-12, 0];
     } else if (this.frameX === this.rightAirFrames[0] || this.frameX === this.rightGroundFrames[0]) {
-      bulletVel = [40, 0];
+      bulletVel = [12, 0];
     }
 
     let bulletPos = [this.pos[0] + 70, this.pos[1] + 50];
@@ -486,12 +495,6 @@ class Robot {
 function drawSprite(img, sX, sY, sW, sH, dX, dY, dW, dH){
   cntx.drawImage(img, sX, sY, sW, sH, dX, dY, dW, dH);
 }
-
-// function animate(){
-//   cntx.clearRect(0, 0, canvas.width, canvas.height);
-//   newgoose[i].draw();
-//   newgoose[i].move();
-// }
 
 module.exports = Robot;
 

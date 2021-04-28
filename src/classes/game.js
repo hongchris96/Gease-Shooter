@@ -23,12 +23,22 @@ class Game {
     }
   }
 
+  removeGoose(theGoose) {
+    this.geese.splice(this.geese.indexOf(theGoose), 1);
+    // let newGoose = new Goose({pos: this.randomPos(), game: this});
+    // this.geese.push(newGoose);
+  }
+
   addBullet(bullet) {
     this.bullets.push(bullet);
   }
 
-  removeBullet() {
-    this.bullets.shift();
+  removeBullet(bullet) {
+    if (bullet === undefined) {
+      this.bullets.shift();
+    } else {
+      this.bullets.splice(this.bullets.indexOf(bullet), 1);
+    }
   }
 
   randomPos() {
@@ -46,6 +56,16 @@ class Game {
     for (let i = 0; i < this.bullets.length; i++) {
       this.bullets[i].draw(cntx);
     }
+  }
+
+  checkCollision() {
+    // this.geese.forEach(goose => {
+    //   for (let i = 0; i < this.bullets.length; i++) {
+    //     if (goose.isCollidedWith(this.bullets[i])) {
+    //       goose.collideWith(this.bullets[i]);
+    //     }
+    //   }
+    // });
   }
 
   moveObjects() {
