@@ -1,5 +1,6 @@
 const Goose = require('./goose');
 const Robo = require('./robot');
+const Bullet = require('./bullet');
 const Util = require('../utils/utils');
 
 class Game {
@@ -9,6 +10,7 @@ class Game {
     this.NUM_GEESE = 5;
     this.geese = [];
     this.addGoose();
+    this.bullets = [];
     this.robo = new Robo({game: this});
     this.actionKeys = [];
     this.randomPos = this.randomPos.bind(this);
@@ -19,6 +21,14 @@ class Game {
       let newGoose = new Goose({pos: this.randomPos(), game: this});
       this.geese.push(newGoose);
     }
+  }
+
+  addBullet(bullet) {
+    this.bullets.push(bullet);
+  }
+
+  removeBullet() {
+    this.bullets.shift();
   }
 
   randomPos() {
@@ -33,12 +43,18 @@ class Game {
       this.geese[i].draw(cntx);
     }
     this.robo.draw(this.actionKeys);
+    for (let i = 0; i < this.bullets.length; i++) {
+      this.bullets[i].draw(cntx);
+    }
   }
 
   moveObjects() {
     this.geese.forEach(goose => {
       goose.move();
     });
+    this.bullets.forEach(bullet => {
+      bullet.move();
+    })
   }
 
   wrap(pos, vel) {
@@ -72,6 +88,9 @@ class Game {
           break;
         case "d": 
           if (!this.actionKeys.includes("right")) this.actionKeys.push('right');
+          break;
+        case " ":
+          this.robo.fireBullet();
           break;
       }
       this.robo.move(this.actionKeys);

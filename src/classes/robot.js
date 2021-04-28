@@ -1,4 +1,5 @@
 const Util = require('../utils/utils');
+const Bullet = require('./bullet');
 // const RoboImage = require('../assets/images/robo_sprites.png');
 // 1840 × 1280
 const canvas = document.getElementById('game-canvas');
@@ -125,6 +126,25 @@ class Robot {
         }
       }
     }
+  }
+
+  fireBullet() {
+    let bulletVel;
+    if (this.frameX === this.leftAirFrames[0] || this.frameX === this.leftGroundFrames[0]) {
+      bulletVel = [-40, 0];
+    } else if (this.frameX === this.rightAirFrames[0] || this.frameX === this.rightGroundFrames[0]) {
+      bulletVel = [40, 0];
+    }
+
+    let bulletPos = [this.pos[0] + 70, this.pos[1] + 50];
+
+    const bullet = new Bullet({
+      pos: bulletPos,
+      vel: bulletVel,
+      game: this.game
+    });
+
+    this.game.addBullet(bullet);
   }
 
 }

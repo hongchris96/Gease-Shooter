@@ -1,6 +1,72 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/classes/bullet.js":
+/*!*******************************!*\
+  !*** ./src/classes/bullet.js ***!
+  \*******************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const Util = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
+// 3520 × 1619
+
+const canvas = document.getElementById('game-canvas');
+const cntx = canvas.getContext('2d');
+
+
+class Bullet {
+  constructor(options){
+    this.width = 580;
+    this.height = 480;
+    this.pos = options.pos;
+    this.vel = options.vel;
+    this.game = options.game;
+    this.img = new Image();
+    this.img.src = "../src/assets/images/projectile_sprites.png";
+
+    this.sourceX = 0;
+    this.sourceY = 1080;
+
+    this.img.onload = () => this.draw();
+  }
+  
+  draw(cntx){
+    if (this.vel[0] < 0) {
+      this.sourceX = 0;
+    } else {
+      this.sourceX = 590;
+    }
+    drawSprite(this.img, this.sourceX, this.sourceY, this.width, this.height,
+      this.pos[0], this.pos[1], this.width * 0.03, this.height * 0.03);
+  }
+
+  move(){
+    this.pos[0] += this.vel[0];
+    this.pos[1] += this.vel[1];
+    // let newVal = this.game.wrap(this.pos, this.vel);
+    // this.pos = newVal[0];
+    // this.vel = newVal[1];
+    if (this.pos[0] < 0 || this.pos[0] > 900 || this.pos[1] > 550 || this.pos[1] < 0) {
+      this.game.removeBullet();
+    }
+  }
+
+}
+
+function drawSprite(img, sX, sY, sW, sH, dX, dY, dW, dH){
+  cntx.drawImage(img, sX, sY, sW, sH, dX, dY, dW, dH);
+}
+
+// function animate(){
+//   cntx.clearRect(0, 0, canvas.width, canvas.height);
+//   newgoose[i].draw();
+//   newgoose[i].move();
+// }
+
+module.exports = Bullet;
+
+/***/ }),
+
 /***/ "./src/classes/game.js":
 /*!*****************************!*\
   !*** ./src/classes/game.js ***!
@@ -9,6 +75,7 @@
 
 const Goose = __webpack_require__(/*! ./goose */ "./src/classes/goose.js");
 const Robo = __webpack_require__(/*! ./robot */ "./src/classes/robot.js");
+const Bullet = __webpack_require__(/*! ./bullet */ "./src/classes/bullet.js");
 const Util = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
 
 class Game {
@@ -18,6 +85,7 @@ class Game {
     this.NUM_GEESE = 5;
     this.geese = [];
     this.addGoose();
+    this.bullets = [];
     this.robo = new Robo({game: this});
     this.actionKeys = [];
     this.randomPos = this.randomPos.bind(this);
@@ -28,6 +96,14 @@ class Game {
       let newGoose = new Goose({pos: this.randomPos(), game: this});
       this.geese.push(newGoose);
     }
+  }
+
+  addBullet(bullet) {
+    this.bullets.push(bullet);
+  }
+
+  removeBullet() {
+    this.bullets.shift();
   }
 
   randomPos() {
@@ -42,12 +118,18 @@ class Game {
       this.geese[i].draw(cntx);
     }
     this.robo.draw(this.actionKeys);
+    for (let i = 0; i < this.bullets.length; i++) {
+      this.bullets[i].draw(cntx);
+    }
   }
 
   moveObjects() {
     this.geese.forEach(goose => {
       goose.move();
     });
+    this.bullets.forEach(bullet => {
+      bullet.move();
+    })
   }
 
   wrap(pos, vel) {
@@ -81,6 +163,9 @@ class Game {
           break;
         case "d": 
           if (!this.actionKeys.includes("right")) this.actionKeys.push('right');
+          break;
+        case " ":
+          this.robo.fireBullet();
           break;
       }
       this.robo.move(this.actionKeys);
@@ -248,6 +333,7 @@ module.exports = Goose;
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 const Util = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
+const Bullet = __webpack_require__(/*! ./bullet */ "./src/classes/bullet.js");
 // const RoboImage = require('../assets/images/robo_sprites.png');
 // 1840 × 1280
 const canvas = document.getElementById('game-canvas');
@@ -374,6 +460,25 @@ class Robot {
         }
       }
     }
+  }
+
+  fireBullet() {
+    let bulletVel;
+    if (this.frameX === this.leftAirFrames[0] || this.frameX === this.leftGroundFrames[0]) {
+      bulletVel = [-40, 0];
+    } else if (this.frameX === this.rightAirFrames[0] || this.frameX === this.rightGroundFrames[0]) {
+      bulletVel = [40, 0];
+    }
+
+    let bulletPos = [this.pos[0] + 70, this.pos[1] + 50];
+
+    const bullet = new Bullet({
+      pos: bulletPos,
+      vel: bulletVel,
+      game: this.game
+    });
+
+    this.game.addBullet(bullet);
   }
 
 }
