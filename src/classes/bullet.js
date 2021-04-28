@@ -34,12 +34,21 @@ class Bullet {
   move(){
     this.pos[0] += this.vel[0];
     this.pos[1] += this.vel[1];
-    // let newVal = this.game.wrap(this.pos, this.vel);
-    // this.pos = newVal[0];
-    // this.vel = newVal[1];
+
     if (this.pos[0] < 0 || this.pos[0] > 900 || this.pos[1] > 550 || this.pos[1] < 0) {
       this.game.removeBullet();
     }
+  }
+
+  hit(target) {
+    const bulletX = this.pos[0];
+    const bulletY = this.pos[1];
+    const targetX = target.pos[0];
+    const targetY = target.pos[1];
+    if (bulletX >= targetX && bulletX < targetX + 100 && bulletY >= targetY && bulletY < targetY + 100) {
+      return true;
+    }
+    return false;
   }
 
 }
@@ -48,10 +57,5 @@ function drawSprite(img, sX, sY, sW, sH, dX, dY, dW, dH){
   cntx.drawImage(img, sX, sY, sW, sH, dX, dY, dW, dH);
 }
 
-// function animate(){
-//   cntx.clearRect(0, 0, canvas.width, canvas.height);
-//   newgoose[i].draw();
-//   newgoose[i].move();
-// }
 
 module.exports = Bullet;

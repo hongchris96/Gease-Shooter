@@ -10,6 +10,7 @@ class GameView {
 
   start() {
     setInterval(() => {
+      this.game.checkCollision();
       this.game.moveObjects();
       this.game.draw(this.cntx);
     }, 17);
