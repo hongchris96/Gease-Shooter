@@ -1,5 +1,6 @@
 const Util = require('../utils/utils');
 const Bullet = require('./bullet');
+const Rocket = require('./rocket');
 // const RoboImage = require('../assets/images/robo_sprites.png');
 // 1840 × 1280
 const canvas = document.getElementById('game-canvas');
@@ -21,7 +22,7 @@ class Robot {
     this.img.src = "../src/assets/images/robo_sprites.png";
     this.frameX = this.rightGroundFrames[0];
     this.frameY = this.rightGroundFrames[1];
-
+    this.weapon = 'pistol';
     this.img.onload = () => this.draw();
   }
   
@@ -127,6 +128,10 @@ class Robot {
     }
   }
 
+  switchWeapon(weaponType) {
+    this.weapon = weaponType;
+  }
+
   fireBullet() {
     let bulletVel;
     if (this.frameX === this.leftAirFrames[0] || this.frameX === this.leftGroundFrames[0]) {
@@ -144,6 +149,27 @@ class Robot {
     });
 
     this.game.addBullet(bullet);
+  }
+
+  fireRocket() {
+    let rocketVel;
+    let rocketPos;
+    if (this.frameX === this.leftAirFrames[0] || this.frameX === this.leftGroundFrames[0]) {
+      rocketVel = [-5, 0];
+      rocketPos = [this.pos[0] - 30, this.pos[1] + 50];
+    } else if (this.frameX === this.rightAirFrames[0] || this.frameX === this.rightGroundFrames[0]) {
+      rocketVel = [5, 0];
+      rocketPos = [this.pos[0] + 70, this.pos[1] + 50];
+    }
+
+
+    const rocket = new Rocket({
+      pos: rocketPos,
+      vel: rocketVel,
+      game: this.game
+    });
+
+    this.game.addRocket(rocket);
   }
 
 }

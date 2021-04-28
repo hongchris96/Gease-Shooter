@@ -11,6 +11,7 @@ class Game {
     this.geese = [];
     this.addGoose();
     this.bullets = [];
+    this.rockets = [];
     this.robo = new Robo({game: this});
     this.actionKeys = [];
     this.randomPos = this.randomPos.bind(this);
@@ -41,6 +42,18 @@ class Game {
     }
   }
 
+  addRocket(rocket) {
+    this.rockets.push(rocket);
+  }
+
+  removeRocket(rocket) {
+    if (rocket === undefined) {
+      this.rockets.shift();
+    } else {
+      this.rockets.splice(this.rockets.indexOf(rocket), 1);
+    }
+  }
+
   randomPos() {
     let x = Math.random() > 0.5 ? -100 : this.DIM_X + 100; 
     let y = Math.random() * this.DIM_Y - 70;
@@ -55,6 +68,9 @@ class Game {
     this.robo.draw(this.actionKeys);
     for (let i = 0; i < this.bullets.length; i++) {
       this.bullets[i].draw(cntx);
+    }
+    for (let i = 0; i < this.rockets.length; i++) {
+      this.rockets[i].draw(cntx);
     }
   }
 
@@ -77,6 +93,9 @@ class Game {
     });
     this.bullets.forEach(bullet => {
       bullet.move();
+    })
+    this.rockets.forEach(rocket => {
+      rocket.move();
     })
   }
 
@@ -112,8 +131,18 @@ class Game {
         case "d": 
           if (!this.actionKeys.includes("right")) this.actionKeys.push('right');
           break;
+        case "1":
+          this.robo.switchWeapon('pistol');
+          break;
+        case "2":
+          this.robo.switchWeapon('rocket');
+          break;
         case " ":
-          this.robo.fireBullet();
+          if (this.robo.weapon === 'pistol') {
+            this.robo.fireBullet();
+          } else if (this.robo.weapon === 'rocket') {
+            this.robo.fireRocket();
+          }
           break;
       }
       this.robo.move(this.actionKeys);
