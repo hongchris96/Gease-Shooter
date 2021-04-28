@@ -22,7 +22,7 @@ class Bullet {
     this.vel = options.vel;
     this.game = options.game;
     this.img = new Image();
-    this.img.src = "../src/assets/images/projectile_sprites.png";
+    this.img.src = "./src/assets/images/projectile_sprites.png";
 
     this.sourceX = 0;
     this.sourceY = 1080;
@@ -432,7 +432,7 @@ class Goose {
     this.counter = 0;
     this.frameCount = 0;
     this.img = new Image();
-    this.img.src = "../src/assets/images/goose_sprites.png";
+    this.img.src = "./src/assets/images/goose_sprites.png";
 
     if (this.vel[0] < 0) {
       if (this.pos[1] < 400) {
@@ -527,7 +527,7 @@ class Robot {
     this.leftGroundFrames = [0, 1];
     this.rightGroundFrames = [1, 1];
     this.img = new Image();
-    this.img.src = "../src/assets/images/robo_sprites.png";
+    this.img.src = "./src/assets/images/robo_sprites.png";
     this.frameX = this.rightGroundFrames[0];
     this.frameY = this.rightGroundFrames[1];
     this.weapon = 'pistol';
@@ -748,7 +748,7 @@ class Rocket {
     this.vel = options.vel;
     this.game = options.game;
     this.img = new Image();
-    this.img.src = "../src/assets/images/projectile_sprites.png";
+    this.img.src = "./src/assets/images/projectile_sprites.png";
 
     this.sourceX = 0;
     this.sourceY = 400;
