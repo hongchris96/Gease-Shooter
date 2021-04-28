@@ -140,7 +140,25 @@ class Game {
     this.explosions = [];
     this.robo = new Robo({game: this});
     this.actionKeys = [];
+    this.points = 0;
+    this.timer = 0;
     this.randomPos = this.randomPos.bind(this);
+  }
+
+  timePassed() {
+    setInterval(() => {this.timer += 1}, 1000);
+  }
+
+  showProperTime() {
+    let minutes = Math.floor(this.timer / 60).toString();
+    let seconds = (this.timer % 60).toString();
+    if (minutes.length === 1) {
+      minutes = "0" + minutes;
+    }
+    if (seconds.length === 1) {
+      seconds = "0" + seconds;
+    }
+    return `${minutes}:${seconds}`;
   }
 
   addGoose() {
@@ -152,6 +170,7 @@ class Game {
 
   removeGoose(theGoose) {
     this.geese.splice(this.geese.indexOf(theGoose), 1);
+    this.points += 10;
     let newGoose = new Goose({pos: this.randomPos(), game: this});
     this.geese.push(newGoose);
   }
@@ -193,6 +212,12 @@ class Game {
 
   draw(cntx) {
     cntx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
+    cntx.font = "100px Comic Sans MS";
+    cntx.fillStyle = "gray";
+    cntx.textAlign = "left";
+    cntx.globalAlpha = 0.2;
+    cntx.fillText(`\u{1F553} ${this.showProperTime()}`, 240, 310);
+    cntx.globalAlpha = 1;
     for (let i = 0; i < this.geese.length; i++) {
       this.geese[i].draw(cntx);
     }
@@ -206,6 +231,10 @@ class Game {
     for (let i = 0; i < this.explosions.length; i++) {
       this.explosions[i].draw(cntx);
     }
+    cntx.font = "30px Comic Sans MS";
+    cntx.fillStyle = "black";
+    cntx.textAlign = "right";
+    cntx.fillText(`${this.points} \u{1F536}`, 870, 60);
   }
 
   checkCollision() {
@@ -363,6 +392,7 @@ class GameView {
   }
 
   start() {
+    this.game.timePassed();
     setInterval(() => {
       this.game.checkCollision();
       this.game.moveObjects();
