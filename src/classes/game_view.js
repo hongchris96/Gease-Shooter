@@ -9,6 +9,7 @@ class GameView {
   }
 
   start() {
+    this.game.timePassed();
     setInterval(() => {
       this.game.checkCollision();
       this.game.moveObjects();
