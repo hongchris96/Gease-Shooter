@@ -71,6 +71,52 @@ module.exports = Bullet;
 
 /***/ }),
 
+/***/ "./src/classes/explosion.js":
+/*!**********************************!*\
+  !*** ./src/classes/explosion.js ***!
+  \**********************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const Util = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
+// 3520 × 1619
+
+class Explosion {
+  constructor(options){
+    this.pos = options.pos;
+    this.radius = 80;
+    this.game = options.game;
+  }
+  
+  draw(cntx){
+    var xcolor = cntx.createRadialGradient(this.pos[0], this.pos[1], this.radius - 25, this.pos[0], this.pos[1], this.radius, 100);
+    xcolor.addColorStop(0, "yellow");
+    xcolor.addColorStop(1, "red");
+
+    cntx.beginPath();
+    cntx.arc(this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI, true);
+    cntx.fillStyle = xcolor;
+    cntx.fill();
+  }
+
+  hit(target) {
+    const expX = this.pos[0];
+    const expY = this.pos[1];
+    const targetX = target.pos[0] + 50;
+    const targetY = target.pos[1] + 50;
+    const distance = Math.pow(Math.pow(expX - targetX, 2) + Math.pow(expY - targetY, 2), 0.5);
+    if (distance < 120) {
+      return true;
+    }
+    return false;
+  }
+
+}
+
+
+module.exports = Explosion;
+
+/***/ }),
+
 /***/ "./src/classes/game.js":
 /*!*****************************!*\
   !*** ./src/classes/game.js ***!
@@ -79,18 +125,19 @@ module.exports = Bullet;
 
 const Goose = __webpack_require__(/*! ./goose */ "./src/classes/goose.js");
 const Robo = __webpack_require__(/*! ./robot */ "./src/classes/robot.js");
-const Bullet = __webpack_require__(/*! ./bullet */ "./src/classes/bullet.js");
+const Explosion = __webpack_require__(/*! ./explosion */ "./src/classes/explosion.js");
 const Util = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
 
 class Game {
   constructor(options) {
     this.DIM_X = 900;
     this.DIM_Y = 550;
-    this.NUM_GEESE = 5;
+    this.NUM_GEESE = 8;
     this.geese = [];
     this.addGoose();
     this.bullets = [];
     this.rockets = [];
+    this.explosions = [];
     this.robo = new Robo({game: this});
     this.actionKeys = [];
     this.randomPos = this.randomPos.bind(this);
@@ -133,6 +180,11 @@ class Game {
     }
   }
 
+  addExplosion(boom) {
+    this.explosions.push(boom);
+    setTimeout(() => {this.explosions.shift()}, 300);
+  }
+
   randomPos() {
     let x = Math.random() > 0.5 ? -100 : this.DIM_X + 100; 
     let y = Math.random() * this.DIM_Y - 70;
@@ -151,16 +203,39 @@ class Game {
     for (let i = 0; i < this.rockets.length; i++) {
       this.rockets[i].draw(cntx);
     }
+    for (let i = 0; i < this.explosions.length; i++) {
+      this.explosions[i].draw(cntx);
+    }
   }
 
   checkCollision() {
     const geese = this.geese;
     const bullets = this.bullets;
+    const rockets = this.rockets;
+    const explosions = this.explosions;
     for (let i = 0; i < bullets.length; i++) {
       for (let j = 0; j < geese.length; j++) {
         if (this.bullets[i].hit(this.geese[j])) {
           this.removeGoose(this.geese[j]);
           this.removeBullet(this.bullets[i]);
+        }
+      }
+    }
+    for (let i = 0; i < rockets.length; i++) {
+      for (let j = 0; j < geese.length; j++) {
+        if (this.rockets[i].hit(this.geese[j])) {
+          let site = [this.geese[j].pos[0] + 50, this.geese[j].pos[1] + 50];
+          let boom = new Explosion({pos: site, game: this});
+          this.removeGoose(this.geese[j]);
+          this.removeRocket(this.rockets[i]);
+          this.addExplosion(boom);
+        }
+      }
+    }
+    for (let i = 0; i < explosions.length; i++) {
+      for (let j = 0; j < geese.length; j++) {
+        if (this.explosions[i].hit(this.geese[j])) {
+          this.removeGoose(this.geese[j]);
         }
       }
     }
@@ -548,7 +623,6 @@ class Robot {
       rocketPos = [this.pos[0] + 70, this.pos[1] + 50];
     }
 
-
     const rocket = new Rocket({
       pos: rocketPos,
       vel: rocketVel,
@@ -611,7 +685,7 @@ class Rocket {
     this.pos[0] += this.vel[0];
     this.pos[1] += this.vel[1];
 
-    if (this.pos[0] < 0 || this.pos[0] > 900 || this.pos[1] > 550 || this.pos[1] < 0) {
+    if (this.pos[0] < -100 || this.pos[0] > 900 || this.pos[1] > 550 || this.pos[1] < 0) {
       this.game.removeRocket();
     }
   }
@@ -621,7 +695,7 @@ class Rocket {
     const rocketY = this.pos[1];
     const targetX = target.pos[0];
     const targetY = target.pos[1];
-    if (rocketX >= targetX && rocketX < targetX + 100 && rocketY >= targetY && rocketY < targetY + 100) {
+    if (rocketX >= targetX - 80 && rocketX < targetX + 60 && rocketY >= targetY - 20 && rocketY < targetY + 80) {
       return true;
     }
     return false;

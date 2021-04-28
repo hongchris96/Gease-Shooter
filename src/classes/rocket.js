@@ -35,7 +35,7 @@ class Rocket {
     this.pos[0] += this.vel[0];
     this.pos[1] += this.vel[1];
 
-    if (this.pos[0] < 0 || this.pos[0] > 900 || this.pos[1] > 550 || this.pos[1] < 0) {
+    if (this.pos[0] < -100 || this.pos[0] > 900 || this.pos[1] > 550 || this.pos[1] < 0) {
       this.game.removeRocket();
     }
   }
@@ -45,7 +45,7 @@ class Rocket {
     const rocketY = this.pos[1];
     const targetX = target.pos[0];
     const targetY = target.pos[1];
-    if (rocketX >= targetX && rocketX < targetX + 100 && rocketY >= targetY && rocketY < targetY + 100) {
+    if (rocketX >= targetX - 80 && rocketX < targetX + 60 && rocketY >= targetY - 20 && rocketY < targetY + 80) {
       return true;
     }
     return false;

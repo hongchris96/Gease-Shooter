@@ -162,7 +162,6 @@ class Robot {
       rocketPos = [this.pos[0] + 70, this.pos[1] + 50];
     }
 
-
     const rocket = new Rocket({
       pos: rocketPos,
       vel: rocketVel,
