@@ -1,9 +1,5 @@
 const GameView = require('./classes/game_view');
 const Goose = require('./classes/goose');
-
-document.addEventListener('load', () => {
-  document.getElementById('theme-music').play();
-});
   
 document.addEventListener("DOMContentLoaded", (e) => {
     
@@ -16,9 +12,12 @@ document.addEventListener("DOMContentLoaded", (e) => {
   const backToMenu = document.querySelector('.go-back');
   const music = document.getElementById('theme-music');
   const musicIcon = document.getElementById('music-icon');
+  const gameMenu = document.getElementById('menu-icon');
   
   const kanvas = document.getElementById("game-canvas");
   const cntx = kanvas.getContext("2d");
+
+  const currentGame = [];
 
   music.volume = 0.3;
 
@@ -43,9 +42,16 @@ document.addEventListener("DOMContentLoaded", (e) => {
     setTimeout(() => {
       kanvas.classList.remove('hidden');
       kanvas.classList.add('fade-in');
+      gameMenu.classList.remove('hidden');
+      gameMenu.classList.add('fade-in');
       const zaGame = new GameView(cntx);
+      currentGame.push(zaGame);
       zaGame.start();
     }, 1000);
+  });
+
+  gameMenu.addEventListener('click', () => {
+    currentGame[0].pause();
   });
 
   instructionButton.addEventListener('click', () => {

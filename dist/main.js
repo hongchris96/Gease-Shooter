@@ -142,11 +142,19 @@ class Game {
     this.actionKeys = [];
     this.points = 0;
     this.timer = 0;
+    this.paused = false;
     this.randomPos = this.randomPos.bind(this);
   }
 
   timePassed() {
-    setInterval(() => {this.timer += 1}, 1000);
+    if (!this.paused) {
+      setInterval(() => {this.timer += 1}, 1000);
+    }
+  }
+
+  togglePause() {
+    if (!this.paused) this.paused = true;
+    else this.paused = false;
   }
 
   showProperTime() {
@@ -394,10 +402,16 @@ class GameView {
   start() {
     this.game.timePassed();
     setInterval(() => {
-      this.game.checkCollision();
-      this.game.moveObjects();
-      this.game.draw(this.cntx);
+      if (!this.game.paused) {
+        this.game.checkCollision();
+        this.game.moveObjects();
+        this.game.draw(this.cntx);
+      }
     }, 17);
+  }
+
+  pause() {
+    this.game.togglePause();
   }
 }
 
@@ -853,10 +867,6 @@ var __webpack_exports__ = {};
   \**********************/
 const GameView = __webpack_require__(/*! ./classes/game_view */ "./src/classes/game_view.js");
 const Goose = __webpack_require__(/*! ./classes/goose */ "./src/classes/goose.js");
-
-document.addEventListener('load', () => {
-  document.getElementById('theme-music').play();
-});
   
 document.addEventListener("DOMContentLoaded", (e) => {
     
@@ -869,9 +879,12 @@ document.addEventListener("DOMContentLoaded", (e) => {
   const backToMenu = document.querySelector('.go-back');
   const music = document.getElementById('theme-music');
   const musicIcon = document.getElementById('music-icon');
+  const gameMenu = document.getElementById('menu-icon');
   
   const kanvas = document.getElementById("game-canvas");
   const cntx = kanvas.getContext("2d");
+
+  const currentGame = [];
 
   music.volume = 0.3;
 
@@ -896,9 +909,16 @@ document.addEventListener("DOMContentLoaded", (e) => {
     setTimeout(() => {
       kanvas.classList.remove('hidden');
       kanvas.classList.add('fade-in');
+      gameMenu.classList.remove('hidden');
+      gameMenu.classList.add('fade-in');
       const zaGame = new GameView(cntx);
+      currentGame.push(zaGame);
       zaGame.start();
     }, 1000);
+  });
+
+  gameMenu.addEventListener('click', () => {
+    currentGame[0].pause();
   });
 
   instructionButton.addEventListener('click', () => {

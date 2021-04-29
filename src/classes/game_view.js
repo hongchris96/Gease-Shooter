@@ -11,10 +11,16 @@ class GameView {
   start() {
     this.game.timePassed();
     setInterval(() => {
-      this.game.checkCollision();
-      this.game.moveObjects();
-      this.game.draw(this.cntx);
+      if (!this.game.paused) {
+        this.game.checkCollision();
+        this.game.moveObjects();
+        this.game.draw(this.cntx);
+      }
     }, 17);
+  }
+
+  pause() {
+    this.game.togglePause();
   }
 }
 

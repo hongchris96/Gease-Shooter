@@ -17,11 +17,19 @@ class Game {
     this.actionKeys = [];
     this.points = 0;
     this.timer = 0;
+    this.paused = false;
     this.randomPos = this.randomPos.bind(this);
   }
 
   timePassed() {
-    setInterval(() => {this.timer += 1}, 1000);
+    if (!this.paused) {
+      setInterval(() => {this.timer += 1}, 1000);
+    }
+  }
+
+  togglePause() {
+    if (!this.paused) this.paused = true;
+    else this.paused = false;
   }
 
   showProperTime() {

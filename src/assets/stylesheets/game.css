@@ -14,10 +14,30 @@ body {
   font-family: WW;
 }
 
+#menu-icon {
+  position: absolute;
+  top: 18px;
+  left: 25px;
+  width: 80px;
+  height: auto;
+  cursor: pointer;
+  border-radius: 40px;
+}
+
+#menu-icon:hover {
+  width: 90px;
+  height: auto;
+  top: 13px;
+  left: 20px;
+  transition: 0.3s;
+  background-color: rgba(21, 255, 52, 0.137);
+  box-shadow: 0 0 100px rgba(21, 255, 52, 0.555);
+}
+
 #music-icon {
   position: absolute;
   top: 10px;
-  right: 20px;
+  right: 22px;
   width: 90px;
   height: auto;
   cursor: pointer;
@@ -27,6 +47,40 @@ body {
   width: 100px;
   height: auto;
   top: 5px;
+  right: 17px;
+  transition: 0.3s;
+}
+
+#git-icon {
+  position: absolute;
+  top: 120px;
+  right: 36px;
+  width: 58px;
+  height: auto;
+  cursor: pointer;
+}
+
+#git-icon:hover {
+  width: 64px;
+  height: auto;
+  top: 117px;
+  right: 33px;
+  transition: 0.3s;
+}
+
+#linked-icon {
+  position: absolute;
+  top: 200px;
+  right: 20px;
+  width: 90px;
+  height: auto;
+  cursor: pointer;
+}
+
+#linked-icon:hover {
+  width: 100px;
+  height: auto;
+  top: 195px;
   right: 15px;
   transition: 0.3s;
 }
