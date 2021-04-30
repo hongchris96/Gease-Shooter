@@ -92,7 +92,7 @@ class Game {
 
   randomPos() {
     let x = Math.random() > 0.5 ? -100 : this.DIM_X + 100; 
-    let y = Math.random() * this.DIM_Y - 70;
+    let y = (Math.random() * (this.DIM_Y - 100)) + 10;
     return [x, y]; 
   }
 
@@ -202,12 +202,12 @@ class Game {
     let newVel = vel;
     if (pos[0] > this.DIM_X + 100) { 
       x -= this.DIM_X + 200; 
-      y = Math.random() * this.DIM_Y - 70;
+      y = (Math.random() * (this.DIM_Y - 100)) + 10;
       newVel = Util.randomVec(1);
     }
     else if (pos[0] < -100) {
       x += this.DIM_X + 100;
-      y = Math.random() * this.DIM_Y - 70;
+      y = (Math.random() * (this.DIM_Y - 100)) + 10;
       newVel = Util.randomVec(1);
     }
     return [[x, y], newVel];
