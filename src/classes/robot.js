@@ -32,7 +32,16 @@ class Robot {
     if (dirArray !== undefined) {
       firstTwoKeys = dirArray.slice(0, 2);
     }
-    if (firstTwoKeys.includes("left")) {
+
+    if (firstTwoKeys.includes("left") && firstTwoKeys.includes("right")) {
+      if (this.pos[1] < 400) {
+        this.frameX = firstTwoKeys[1] === "left" ? this.leftAirFrames[0] : this.rightAirFrames[0];
+        this.frameY = firstTwoKeys[1] === "left" ? this.leftAirFrames[1] : this.rightAirFrames[1];
+      } else {
+        this.frameX = firstTwoKeys[1] === "left" ? this.leftGroundFrames[0] : this.rightGroundFrames[0];
+        this.frameY = firstTwoKeys[1] === "left" ? this.leftGroundFrames[1] : this.rightGroundFrames[1];
+      }
+    } else if (firstTwoKeys.includes("left") && !firstTwoKeys.includes("right")) {
       if (this.pos[1] < 400) {
         this.frameX = this.leftAirFrames[0];
         this.frameY = this.leftAirFrames[1];
@@ -40,7 +49,7 @@ class Robot {
         this.frameX = this.leftGroundFrames[0];
         this.frameY = this.leftGroundFrames[1];
       }
-    } else if (firstTwoKeys.includes("right")){
+    } else if (firstTwoKeys.includes("right") && !firstTwoKeys.includes("left")){
       if (this.pos[1] < 400) {
         this.frameX = this.rightAirFrames[0];
         this.frameY = this.rightAirFrames[1];
