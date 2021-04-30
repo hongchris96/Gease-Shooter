@@ -20,7 +20,7 @@ class Goose {
     this.counter = 0;
     this.frameCount = 0;
     this.img = new Image();
-    this.img.src = "../src/assets/images/goose_sprites.png";
+    this.img.src = "./src/assets/images/goose_sprites.png";
 
     if (this.vel[0] < 0) {
       if (this.pos[1] < 400) {

@@ -13,7 +13,7 @@ class Rocket {
     this.vel = options.vel;
     this.game = options.game;
     this.img = new Image();
-    this.img.src = "../src/assets/images/projectile_sprites.png";
+    this.img.src = "./src/assets/images/projectile_sprites.png";
 
     this.sourceX = 0;
     this.sourceY = 400;

@@ -19,7 +19,7 @@ class Robot {
     this.leftGroundFrames = [0, 1];
     this.rightGroundFrames = [1, 1];
     this.img = new Image();
-    this.img.src = "../src/assets/images/robo_sprites.png";
+    this.img.src = "./src/assets/images/robo_sprites.png";
     this.frameX = this.rightGroundFrames[0];
     this.frameY = this.rightGroundFrames[1];
     this.weapon = 'pistol';
