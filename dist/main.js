@@ -57,7 +57,7 @@ class Bullet {
     const bulletY = this.pos[1];
     const targetX = target.pos[0];
     const targetY = target.pos[1];
-    if (bulletX >= targetX && bulletX < targetX + 100 && bulletY >= targetY && bulletY < targetY + 100) {
+    if (bulletX >= targetX && bulletX < targetX + 80 && bulletY >= targetY - 10 && bulletY < targetY + 80) {
       return true;
     }
     return false;
