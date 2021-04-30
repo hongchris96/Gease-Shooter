@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
   const cntx = kanvas.getContext("2d");
   const zaGame = new GameView(cntx);
 
-  music.volume = 0.3;
+  music.volume = 0.2;
 
   title.addEventListener('click', () => {
     title.classList.add('hidden');
