@@ -142,11 +142,22 @@ class Game {
     this.actionKeys = [];
     this.points = 0;
     this.timer = 0;
+    this.paused = false;
     this.randomPos = this.randomPos.bind(this);
+
+    this.keydownAction = this.keydownAction.bind(this);
+    this.keyupAction = this.keyupAction.bind(this);
   }
 
   timePassed() {
-    setInterval(() => {this.timer += 1}, 1000);
+    if (!this.paused) {
+      setInterval(() => {this.timer += 1}, 1000);
+    }
+  }
+
+  togglePause() {
+    if (!this.paused) this.paused = true;
+    else this.paused = false;
   }
 
   showProperTime() {
@@ -306,70 +317,80 @@ class Game {
     return [[x, y], newVel];
   }
 
+  keydownAction(e) {
+    switch(e.key) {
+      case "w": 
+        if (!this.actionKeys.includes("up")) this.actionKeys.push('up');
+        break;
+      case "a": 
+        if (!this.actionKeys.includes("left")) this.actionKeys.push('left');
+        break;
+      case "s": 
+        if (!this.actionKeys.includes("down")) this.actionKeys.push('down');
+        break;
+      case "d": 
+        if (!this.actionKeys.includes("right")) this.actionKeys.push('right');
+        break;
+      case "1":
+        this.robo.switchWeapon('pistol');
+        break;
+      case "2":
+        this.robo.switchWeapon('rocket');
+        break;
+      case "3":
+        this.robo.switchWeapon('laser');
+        break;
+      case " ":
+        if (this.robo.weapon === 'pistol') {
+          this.robo.fireBullet();
+        } else if (this.robo.weapon === 'rocket') {
+          this.robo.fireRocket();
+        } else if (this.robo.weapon === 'laser') {
+          this.robo.fireLaser();
+        }
+        break;
+    }
+    this.robo.move(this.actionKeys);
+  }
+
+  keyupAction(e) {
+    switch(e.key) {
+      case "w": 
+        this.actionKeys = this.actionKeys.filter(ele => ele !== "up");
+        break;
+      case "a": 
+        this.actionKeys = this.actionKeys.filter(ele => ele !== "left");
+        break;
+      case "s": 
+        this.actionKeys = this.actionKeys.filter(ele => ele !== "down");
+        break;
+      case "d": 
+        this.actionKeys = this.actionKeys.filter(ele => ele !== "right");
+        break;
+      case " ":
+        if (this.robo.weapon === "laser") {
+          this.robo.turnOffLaser();
+        }
+        break;
+    }
+    this.robo.move(this.actionKeys);
+  }
+
   addKeysListener() {
-    document.addEventListener("keydown", (e) => {
-      switch(e.key) {
-        case "w": 
-          if (!this.actionKeys.includes("up")) this.actionKeys.push('up');
-          break;
-        case "a": 
-          if (!this.actionKeys.includes("left")) this.actionKeys.push('left');
-          break;
-        case "s": 
-          if (!this.actionKeys.includes("down")) this.actionKeys.push('down');
-          break;
-        case "d": 
-          if (!this.actionKeys.includes("right")) this.actionKeys.push('right');
-          break;
-        case "1":
-          this.robo.switchWeapon('pistol');
-          break;
-        case "2":
-          this.robo.switchWeapon('rocket');
-          break;
-        case "3":
-          this.robo.switchWeapon('laser');
-          break;
-        case " ":
-          if (this.robo.weapon === 'pistol') {
-            this.robo.fireBullet();
-          } else if (this.robo.weapon === 'rocket') {
-            this.robo.fireRocket();
-          } else if (this.robo.weapon === 'laser') {
-            this.robo.fireLaser();
-          }
-          break;
-      }
-      this.robo.move(this.actionKeys);
-    });
+    document.addEventListener("keydown", this.keydownAction);
   }
 
   removeKeysListener() {
-    document.addEventListener("keyup", (e) => {
-      switch(e.key) {
-        case "w": 
-          this.actionKeys = this.actionKeys.filter(ele => ele !== "up");
-          break;
-        case "a": 
-          this.actionKeys = this.actionKeys.filter(ele => ele !== "left");
-          break;
-        case "s": 
-          this.actionKeys = this.actionKeys.filter(ele => ele !== "down");
-          break;
-        case "d": 
-          this.actionKeys = this.actionKeys.filter(ele => ele !== "right");
-          break;
-        case " ":
-          if (this.robo.weapon === "laser") {
-            this.robo.turnOffLaser();
-          }
-          break;
-      }
-      this.robo.move(this.actionKeys);
-    });
+    document.addEventListener("keyup", this.keyupAction);
+  }
+
+  removeEventListener4ThisGame() {
+    document.removeEventListener("keydown", this.keydownAction);
+    document.removeEventListener("keyup", this.keyupAction);
   }
 
 }
+
 
 module.exports = Game;
 
@@ -383,21 +404,36 @@ module.exports = Game;
 
 const Game = __webpack_require__(/*! ./game */ "./src/classes/game.js");
 
+let gameInterval;
+
 class GameView {
   constructor(cntx) {
     this.cntx = cntx;
+    this.game = null;
+  }
+  
+  start() {
     this.game = new Game();
     this.game.addKeysListener();
     this.game.removeKeysListener();
+    this.game.timePassed();
+    gameInterval = setInterval(() => {
+      if (!this.game.paused) {
+        this.game.checkCollision();
+        this.game.moveObjects();
+        this.game.draw(this.cntx);
+      }
+    }, 17);
   }
 
-  start() {
-    this.game.timePassed();
-    setInterval(() => {
-      this.game.checkCollision();
-      this.game.moveObjects();
-      this.game.draw(this.cntx);
-    }, 17);
+  pause() {
+    this.game.togglePause();
+  }
+
+  destroy() {
+    clearInterval(gameInterval);
+    this.game.removeEventListener4ThisGame();
+    this.game = null;
   }
 }
 
@@ -853,10 +889,6 @@ var __webpack_exports__ = {};
   \**********************/
 const GameView = __webpack_require__(/*! ./classes/game_view */ "./src/classes/game_view.js");
 const Goose = __webpack_require__(/*! ./classes/goose */ "./src/classes/goose.js");
-
-document.addEventListener('load', () => {
-  document.getElementById('theme-music').play();
-});
   
 document.addEventListener("DOMContentLoaded", (e) => {
     
@@ -869,9 +901,15 @@ document.addEventListener("DOMContentLoaded", (e) => {
   const backToMenu = document.querySelector('.go-back');
   const music = document.getElementById('theme-music');
   const musicIcon = document.getElementById('music-icon');
+  const gameMenu = document.getElementById('menu-icon');
+  const modalBackground = document.querySelector('.modal-background');
+  const modal = document.querySelector('.modal');
+  const exitButton = document.querySelector('.exit-button');
+  const restartButton = document.querySelector('.restart-button');
   
   const kanvas = document.getElementById("game-canvas");
   const cntx = kanvas.getContext("2d");
+  const zaGame = new GameView(cntx);
 
   music.volume = 0.3;
 
@@ -896,7 +934,55 @@ document.addEventListener("DOMContentLoaded", (e) => {
     setTimeout(() => {
       kanvas.classList.remove('hidden');
       kanvas.classList.add('fade-in');
-      const zaGame = new GameView(cntx);
+      gameMenu.classList.remove('hidden');
+      gameMenu.classList.add('fade-in');
+      zaGame.start();
+    }, 1000);
+  });
+
+  gameMenu.addEventListener('click', () => {
+    zaGame.pause();
+    modalBackground.classList.remove('hidden');
+    modalBackground.classList.add('fade-in');
+    modal.classList.remove('hidden');
+    modal.classList.add('fade-in');
+  });
+
+  modalBackground.addEventListener('click', () => {
+    zaGame.pause();
+    modalBackground.classList.remove('fade-in');
+    modalBackground.classList.add('hidden');
+    modal.classList.remove('fade-in');
+    modal.classList.add('hidden');
+  });
+
+  exitButton.addEventListener('click', () => {
+    modalBackground.classList.remove('fade-in');
+    modalBackground.classList.add('hidden');
+    modal.classList.remove('fade-in');
+    modal.classList.add('hidden');
+    kanvas.classList.remove('fade-in');
+    kanvas.classList.add('hidden');
+    gameMenu.classList.remove('fade-in');
+    gameMenu.classList.add('hidden');
+    zaGame.destroy();
+    setTimeout(() => {
+      menu.classList.remove('hidden');
+      menu.classList.add('fade-in');
+    }, 1000);
+  });
+
+  restartButton.addEventListener('click', () => {
+    modalBackground.classList.remove('fade-in');
+    modalBackground.classList.add('hidden');
+    modal.classList.remove('fade-in');
+    modal.classList.add('hidden');
+    kanvas.classList.remove('fade-in');
+    kanvas.classList.add('hidden');
+    zaGame.destroy();
+    setTimeout(() => {
+      kanvas.classList.remove('hidden');
+      kanvas.classList.add('fade-in');
       zaGame.start();
     }, 1000);
   });

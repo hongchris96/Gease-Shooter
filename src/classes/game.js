@@ -17,11 +17,22 @@ class Game {
     this.actionKeys = [];
     this.points = 0;
     this.timer = 0;
+    this.paused = false;
     this.randomPos = this.randomPos.bind(this);
+
+    this.keydownAction = this.keydownAction.bind(this);
+    this.keyupAction = this.keyupAction.bind(this);
   }
 
   timePassed() {
-    setInterval(() => {this.timer += 1}, 1000);
+    if (!this.paused) {
+      setInterval(() => {this.timer += 1}, 1000);
+    }
+  }
+
+  togglePause() {
+    if (!this.paused) this.paused = true;
+    else this.paused = false;
   }
 
   showProperTime() {
@@ -181,69 +192,79 @@ class Game {
     return [[x, y], newVel];
   }
 
+  keydownAction(e) {
+    switch(e.key) {
+      case "w": 
+        if (!this.actionKeys.includes("up")) this.actionKeys.push('up');
+        break;
+      case "a": 
+        if (!this.actionKeys.includes("left")) this.actionKeys.push('left');
+        break;
+      case "s": 
+        if (!this.actionKeys.includes("down")) this.actionKeys.push('down');
+        break;
+      case "d": 
+        if (!this.actionKeys.includes("right")) this.actionKeys.push('right');
+        break;
+      case "1":
+        this.robo.switchWeapon('pistol');
+        break;
+      case "2":
+        this.robo.switchWeapon('rocket');
+        break;
+      case "3":
+        this.robo.switchWeapon('laser');
+        break;
+      case " ":
+        if (this.robo.weapon === 'pistol') {
+          this.robo.fireBullet();
+        } else if (this.robo.weapon === 'rocket') {
+          this.robo.fireRocket();
+        } else if (this.robo.weapon === 'laser') {
+          this.robo.fireLaser();
+        }
+        break;
+    }
+    this.robo.move(this.actionKeys);
+  }
+
+  keyupAction(e) {
+    switch(e.key) {
+      case "w": 
+        this.actionKeys = this.actionKeys.filter(ele => ele !== "up");
+        break;
+      case "a": 
+        this.actionKeys = this.actionKeys.filter(ele => ele !== "left");
+        break;
+      case "s": 
+        this.actionKeys = this.actionKeys.filter(ele => ele !== "down");
+        break;
+      case "d": 
+        this.actionKeys = this.actionKeys.filter(ele => ele !== "right");
+        break;
+      case " ":
+        if (this.robo.weapon === "laser") {
+          this.robo.turnOffLaser();
+        }
+        break;
+    }
+    this.robo.move(this.actionKeys);
+  }
+
   addKeysListener() {
-    document.addEventListener("keydown", (e) => {
-      switch(e.key) {
-        case "w": 
-          if (!this.actionKeys.includes("up")) this.actionKeys.push('up');
-          break;
-        case "a": 
-          if (!this.actionKeys.includes("left")) this.actionKeys.push('left');
-          break;
-        case "s": 
-          if (!this.actionKeys.includes("down")) this.actionKeys.push('down');
-          break;
-        case "d": 
-          if (!this.actionKeys.includes("right")) this.actionKeys.push('right');
-          break;
-        case "1":
-          this.robo.switchWeapon('pistol');
-          break;
-        case "2":
-          this.robo.switchWeapon('rocket');
-          break;
-        case "3":
-          this.robo.switchWeapon('laser');
-          break;
-        case " ":
-          if (this.robo.weapon === 'pistol') {
-            this.robo.fireBullet();
-          } else if (this.robo.weapon === 'rocket') {
-            this.robo.fireRocket();
-          } else if (this.robo.weapon === 'laser') {
-            this.robo.fireLaser();
-          }
-          break;
-      }
-      this.robo.move(this.actionKeys);
-    });
+    document.addEventListener("keydown", this.keydownAction);
   }
 
   removeKeysListener() {
-    document.addEventListener("keyup", (e) => {
-      switch(e.key) {
-        case "w": 
-          this.actionKeys = this.actionKeys.filter(ele => ele !== "up");
-          break;
-        case "a": 
-          this.actionKeys = this.actionKeys.filter(ele => ele !== "left");
-          break;
-        case "s": 
-          this.actionKeys = this.actionKeys.filter(ele => ele !== "down");
-          break;
-        case "d": 
-          this.actionKeys = this.actionKeys.filter(ele => ele !== "right");
-          break;
-        case " ":
-          if (this.robo.weapon === "laser") {
-            this.robo.turnOffLaser();
-          }
-          break;
-      }
-      this.robo.move(this.actionKeys);
-    });
+    document.addEventListener("keyup", this.keyupAction);
+  }
+
+  removeEventListener4ThisGame() {
+    document.removeEventListener("keydown", this.keydownAction);
+    document.removeEventListener("keyup", this.keyupAction);
   }
 
 }
+
 
 module.exports = Game;
