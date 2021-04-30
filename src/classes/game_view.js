@@ -13,13 +13,21 @@ class GameView {
     this.game.addKeysListener();
     this.game.removeKeysListener();
     this.game.timePassed();
-    gameInterval = setInterval(() => {
+    this.lastTime = 0;
+    requestAnimationFrame(this.gameloop.bind(this));
+  }
+
+  gameloop(time) {
+    const timeDelta = time - this.lastTime;
+    if (this.game !== null) {
       if (!this.game.paused) {
         this.game.checkCollision();
-        this.game.moveObjects();
+        this.game.moveObjects(timeDelta);
         this.game.draw(this.cntx);
       }
-    }, 17);
+    }
+    this.lastTime = time;
+    requestAnimationFrame(this.gameloop.bind(this));
   }
 
   pause() {
@@ -27,7 +35,6 @@ class GameView {
   }
 
   destroy() {
-    clearInterval(gameInterval);
     this.game.removeEventListener4ThisGame();
     this.game = null;
   }

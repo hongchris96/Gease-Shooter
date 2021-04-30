@@ -130,27 +130,33 @@ class Game {
     const explosions = this.explosions;
     for (let i = 0; i < bullets.length; i++) {
       for (let j = 0; j < geese.length; j++) {
-        if (this.bullets[i].hit(this.geese[j])) {
-          this.removeGoose(this.geese[j]);
-          this.removeBullet(this.bullets[i]);
+        if (this.bullets[i] !== undefined) {
+          if (this.bullets[i].hit(this.geese[j])) {
+            this.removeGoose(this.geese[j]);
+            this.removeBullet(this.bullets[i]);
+          }
         }
       }
     }
     for (let i = 0; i < rockets.length; i++) {
       for (let j = 0; j < geese.length; j++) {
-        if (this.rockets[i].hit(this.geese[j])) {
-          let site = [this.geese[j].pos[0] + 50, this.geese[j].pos[1] + 50];
-          let boom = new Explosion({pos: site, game: this});
-          this.removeGoose(this.geese[j]);
-          this.removeRocket(this.rockets[i]);
-          this.addExplosion(boom);
+        if (this.rockets[i] !== undefined) {
+          if (this.rockets[i].hit(this.geese[j])) {
+            let site = [this.geese[j].pos[0] + 50, this.geese[j].pos[1] + 50];
+            let boom = new Explosion({pos: site, game: this});
+            this.removeGoose(this.geese[j]);
+            this.removeRocket(this.rockets[i]);
+            this.addExplosion(boom);
+          }
         }
       }
     }
     for (let i = 0; i < explosions.length; i++) {
       for (let j = 0; j < geese.length; j++) {
-        if (this.explosions[i].hit(this.geese[j])) {
-          this.removeGoose(this.geese[j]);
+        if (this.explosions[i] !== undefined) {
+          if (this.explosions[i].hit(this.geese[j])) {
+            this.removeGoose(this.geese[j]);
+          }
         }
       }
     }
@@ -163,16 +169,18 @@ class Game {
     }
   }
 
-  moveObjects() {
+  moveObjects(timeDelta) {
+    this.robo.move(timeDelta);
     this.geese.forEach(goose => {
-      goose.move();
+      goose.move(timeDelta);
     });
     this.bullets.forEach(bullet => {
-      bullet.move();
-    })
+      bullet.move(timeDelta);
+    });
     this.rockets.forEach(rocket => {
-      rocket.move();
-    })
+      rocket.addSpeed();
+      rocket.move(timeDelta);
+    });
   }
 
   wrap(pos, vel) {
@@ -182,12 +190,12 @@ class Game {
     if (pos[0] > this.DIM_X + 100) { 
       x -= this.DIM_X + 200; 
       y = Math.random() * this.DIM_Y - 70;
-      newVel = Util.randomVec(2);
+      newVel = Util.randomVec(1);
     }
     else if (pos[0] < -100) {
       x += this.DIM_X + 100;
       y = Math.random() * this.DIM_Y - 70;
-      newVel = Util.randomVec(2);
+      newVel = Util.randomVec(1);
     }
     return [[x, y], newVel];
   }
@@ -225,7 +233,7 @@ class Game {
         }
         break;
     }
-    this.robo.move(this.actionKeys);
+    this.robo.addSpeed(this.actionKeys);
   }
 
   keyupAction(e) {
@@ -248,7 +256,7 @@ class Game {
         }
         break;
     }
-    this.robo.move(this.actionKeys);
+    this.robo.addSpeed(this.actionKeys);
   }
 
   addKeysListener() {

@@ -12,7 +12,7 @@ const Util = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
 
 const canvas = document.getElementById('game-canvas');
 const cntx = canvas.getContext('2d');
-
+const NORMAL_FPS_TIME_DELTA = 1000 / 60;
 
 class Bullet {
   constructor(options){
@@ -40,9 +40,12 @@ class Bullet {
       this.pos[0], this.pos[1], this.width * 0.03, this.height * 0.03);
   }
 
-  move(){
-    this.pos[0] += this.vel[0];
-    this.pos[1] += this.vel[1];
+  move(timeDelta){
+    const velScale = timeDelta / NORMAL_FPS_TIME_DELTA,
+    offsetX = this.vel[0] * velScale,
+    offsetY = this.vel[1] * velScale;
+    this.pos[0] += offsetX;
+    this.pos[1] += offsetY;
 
     if (this.pos[0] < 0 || this.pos[0] > 900 || this.pos[1] > 550 || this.pos[1] < 0) {
       this.game.removeBullet();
@@ -255,27 +258,33 @@ class Game {
     const explosions = this.explosions;
     for (let i = 0; i < bullets.length; i++) {
       for (let j = 0; j < geese.length; j++) {
-        if (this.bullets[i].hit(this.geese[j])) {
-          this.removeGoose(this.geese[j]);
-          this.removeBullet(this.bullets[i]);
+        if (this.bullets[i] !== undefined) {
+          if (this.bullets[i].hit(this.geese[j])) {
+            this.removeGoose(this.geese[j]);
+            this.removeBullet(this.bullets[i]);
+          }
         }
       }
     }
     for (let i = 0; i < rockets.length; i++) {
       for (let j = 0; j < geese.length; j++) {
-        if (this.rockets[i].hit(this.geese[j])) {
-          let site = [this.geese[j].pos[0] + 50, this.geese[j].pos[1] + 50];
-          let boom = new Explosion({pos: site, game: this});
-          this.removeGoose(this.geese[j]);
-          this.removeRocket(this.rockets[i]);
-          this.addExplosion(boom);
+        if (this.rockets[i] !== undefined) {
+          if (this.rockets[i].hit(this.geese[j])) {
+            let site = [this.geese[j].pos[0] + 50, this.geese[j].pos[1] + 50];
+            let boom = new Explosion({pos: site, game: this});
+            this.removeGoose(this.geese[j]);
+            this.removeRocket(this.rockets[i]);
+            this.addExplosion(boom);
+          }
         }
       }
     }
     for (let i = 0; i < explosions.length; i++) {
       for (let j = 0; j < geese.length; j++) {
-        if (this.explosions[i].hit(this.geese[j])) {
-          this.removeGoose(this.geese[j]);
+        if (this.explosions[i] !== undefined) {
+          if (this.explosions[i].hit(this.geese[j])) {
+            this.removeGoose(this.geese[j]);
+          }
         }
       }
     }
@@ -288,16 +297,18 @@ class Game {
     }
   }
 
-  moveObjects() {
+  moveObjects(timeDelta) {
+    this.robo.move(timeDelta);
     this.geese.forEach(goose => {
-      goose.move();
+      goose.move(timeDelta);
     });
     this.bullets.forEach(bullet => {
-      bullet.move();
-    })
+      bullet.move(timeDelta);
+    });
     this.rockets.forEach(rocket => {
-      rocket.move();
-    })
+      rocket.addSpeed();
+      rocket.move(timeDelta);
+    });
   }
 
   wrap(pos, vel) {
@@ -307,12 +318,12 @@ class Game {
     if (pos[0] > this.DIM_X + 100) { 
       x -= this.DIM_X + 200; 
       y = Math.random() * this.DIM_Y - 70;
-      newVel = Util.randomVec(2);
+      newVel = Util.randomVec(1);
     }
     else if (pos[0] < -100) {
       x += this.DIM_X + 100;
       y = Math.random() * this.DIM_Y - 70;
-      newVel = Util.randomVec(2);
+      newVel = Util.randomVec(1);
     }
     return [[x, y], newVel];
   }
@@ -350,7 +361,7 @@ class Game {
         }
         break;
     }
-    this.robo.move(this.actionKeys);
+    this.robo.addSpeed(this.actionKeys);
   }
 
   keyupAction(e) {
@@ -373,7 +384,7 @@ class Game {
         }
         break;
     }
-    this.robo.move(this.actionKeys);
+    this.robo.addSpeed(this.actionKeys);
   }
 
   addKeysListener() {
@@ -417,13 +428,21 @@ class GameView {
     this.game.addKeysListener();
     this.game.removeKeysListener();
     this.game.timePassed();
-    gameInterval = setInterval(() => {
+    this.lastTime = 0;
+    requestAnimationFrame(this.gameloop.bind(this));
+  }
+
+  gameloop(time) {
+    const timeDelta = time - this.lastTime;
+    if (this.game !== null) {
       if (!this.game.paused) {
         this.game.checkCollision();
-        this.game.moveObjects();
+        this.game.moveObjects(timeDelta);
         this.game.draw(this.cntx);
       }
-    }, 17);
+    }
+    this.lastTime = time;
+    requestAnimationFrame(this.gameloop.bind(this));
   }
 
   pause() {
@@ -431,7 +450,6 @@ class GameView {
   }
 
   destroy() {
-    clearInterval(gameInterval);
     this.game.removeEventListener4ThisGame();
     this.game = null;
   }
@@ -452,14 +470,14 @@ const Util = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
 
 const canvas = document.getElementById('game-canvas');
 const cntx = canvas.getContext('2d');
-
+const NORMAL_FPS_TIME_DELTA = 1000 / 60;
 
 class Goose {
   constructor(options){
     this.width = 660;
     this.height = 660;
     this.pos = options.pos;
-    this.vel = Util.randomVec(2);
+    this.vel = Util.randomVec(1);
     this.game = options.game;
     this.leftAirFrames = [[3, 1], [3, 2]];
     this.rightAirFrames = [[3, 0], [2, 2]];
@@ -517,9 +535,12 @@ class Goose {
     drawSprite(this.img, this.width * this.frameX, this.height * this.frameY, this.width, this.height,
       this.pos[0], this.pos[1], this.width * 0.15, this.height * 0.15);
   }
-  move(){
-    this.pos[0] += this.vel[0];
-    this.pos[1] += this.vel[1];
+  move(timeDelta){
+    const velScale = timeDelta / NORMAL_FPS_TIME_DELTA,
+    offsetX = this.vel[0] * velScale,
+    offsetY = this.vel[1] * velScale;
+    this.pos[0] += offsetX;
+    this.pos[1] += offsetY;
     let newVal = this.game.wrap(this.pos, this.vel);
     this.pos = newVal[0];
     this.vel = newVal[1];
@@ -549,14 +570,14 @@ const Rocket = __webpack_require__(/*! ./rocket */ "./src/classes/rocket.js");
 // 1840 × 1280
 const canvas = document.getElementById('game-canvas');
 const cntx = canvas.getContext('2d');
-
+const NORMAL_FPS_TIME_DELTA = 1000 / 60;
 
 class Robot {
   constructor(options){
     this.width = 920;
     this.height = 640;
     this.pos = [380, 410];
-    this.vel = [10, 10];
+    this.vel = [0, 0];
     this.game = options.game;
     this.leftAirFrames = [0, 0];
     this.rightAirFrames = [1, 0];
@@ -572,7 +593,10 @@ class Robot {
   }
   
   draw(dirArray) {
-    let firstTwoKeys = dirArray.slice(0, 2);
+    let firstTwoKeys = [];
+    if (dirArray !== undefined) {
+      firstTwoKeys = dirArray.slice(0, 2);
+    }
     if (firstTwoKeys.includes("left")) {
       if (this.pos[1] < 400) {
         this.frameX = this.leftAirFrames[0];
@@ -630,64 +654,91 @@ class Robot {
     }
   }
 
-  move(dirArray) {
+  addSpeed(dirArray) {
+    if (dirArray === undefined) dirArray = [];
+
+    if (dirArray.length === 0) this.vel = [0, 0];
+
+    if (!dirArray.includes("up")) {
+      if (this.pos[1] < 400) this.vel[1] = 1;
+      else if (this.pos[1] >= 400) this.vel[1] = 0;
+    }
+
     if (dirArray.length === 1){
       switch(dirArray[0]) {
         case "left":
-          if (this.pos[0] > -40) this.pos[0] -= this.vel[0];
+          if (this.pos[0] > -40) this.vel[0] = -6;
           break;
         case "up":
-          if (this.pos[1] > -20) this.pos[1] -= this.vel[1];
+          if (this.pos[1] > -20) this.vel[1] = -8;
           break;
         case "right":
-          if (this.pos[0] < 800) this.pos[0] += this.vel[0];
+          if (this.pos[0] < 800) this.vel[0] = 6;
           break;
         case "down":
-          if (this.pos[1] < 460) this.pos[1] += this.vel[1];
+          if (this.pos[1] < 460) this.vel[1] = 3;
           break;
       }
     } else if (dirArray.length > 1) {
       let firstTwoKeys = dirArray.slice(0, 2);
       if ((firstTwoKeys.includes("up") && firstTwoKeys.includes("down")) || 
           (firstTwoKeys.includes("left") && firstTwoKeys.includes("right"))) {
-            switch(firstTwoKeys[0]) {
+            switch(firstTwoKeys[1]) {
               case "left":
-                if (this.pos[0] > -40) this.pos[0] -= this.vel[0];
+                if (this.pos[0] > -40) this.vel[0] = -6;
                 break;
               case "up":
-                if (this.pos[1] > -20) this.pos[1] -= this.vel[1];
+                if (this.pos[1] > -20) this.vel[1] = -3;
                 break;
               case "right":
-                if (this.pos[0] < 800) this.pos[0] += this.vel[0];
+                if (this.pos[0] < 800) this.vel[0] = 6;
                 break;
               case "down":
-                if (this.pos[1] < 460) this.pos[1] += this.vel[1];
+                if (this.pos[1] < 460) this.vel[1] = 3;
                 break;
             }
       } else {
         if (firstTwoKeys.includes("up") && firstTwoKeys.includes("left")) {
           if (this.pos[0] > -40 && this.pos[1] > -20) {
-            this.pos[0] -= this.vel[0];
-            this.pos[1] -= this.vel[1];
+            this.vel[0] = -6;
+            this.vel[1] = -3;
           }
         } else if (firstTwoKeys.includes("up") && firstTwoKeys.includes("right")) {
           if (this.pos[0] < 800 && this.pos[1] > -20) {
-            this.pos[0] += this.vel[0];
-            this.pos[1] -= this.vel[1];
+            this.vel[0] = 6;
+            this.vel[1] = -3;
           }
         } else if (firstTwoKeys.includes("down") && firstTwoKeys.includes("left")) {
           if (this.pos[0] > -40 && this.pos[1] < 460) {
-            this.pos[0] -= this.vel[0];
-            this.pos[1] += this.vel[1];
+            this.vel[0] = -6;
+            this.vel[1] = 3;
           }
         } else if (firstTwoKeys.includes("down") && firstTwoKeys.includes("right")) {
           if (this.pos[0] < 800 && this.pos[1] < 460) {
-            this.pos[0] += this.vel[0];
-            this.pos[1] += this.vel[1];
+            this.vel[0] = 6;
+            this.vel[1] = 3;
           }
         }
       }
     }
+  }
+
+  move(timeDelta) {
+  
+    const velScale = timeDelta / NORMAL_FPS_TIME_DELTA,
+    offsetX = this.vel[0] * velScale,
+    offsetY = this.vel[1] * velScale;
+    if (this.pos[0] + offsetX < 800 && this.pos[0] + offsetX > -40) {
+      this.pos[0] += offsetX;
+    }
+    if (this.pos[1] + offsetY < 460 && this.pos[1] + offsetY > -20) {
+      if (this.pos[1] >= 400 && this.vel[1] === 1) {
+        this.pos[1] = this.pos[1];
+      } else {
+        this.pos[1] += offsetY;
+      }
+    }
+    
   }
 
   switchWeapon(weaponType) {
@@ -717,10 +768,10 @@ class Robot {
     let rocketVel;
     let rocketPos;
     if (this.frameX === this.leftAirFrames[0] || this.frameX === this.leftGroundFrames[0]) {
-      rocketVel = [-5, 0];
+      rocketVel = [-2, 0];
       rocketPos = [this.pos[0] - 30, this.pos[1] + 50];
     } else if (this.frameX === this.rightAirFrames[0] || this.frameX === this.rightGroundFrames[0]) {
-      rocketVel = [5, 0];
+      rocketVel = [2, 0];
       rocketPos = [this.pos[0] + 70, this.pos[1] + 50];
     }
 
@@ -753,6 +804,7 @@ class Robot {
     }
     return false;
   }
+
 }
 
 function drawSprite(img, sX, sY, sW, sH, dX, dY, dW, dH){
@@ -774,7 +826,7 @@ const Util = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
 
 const canvas = document.getElementById('game-canvas');
 const cntx = canvas.getContext('2d');
-
+const NORMAL_FPS_TIME_DELTA = 1000 / 60;
 
 class Rocket {
   constructor(options){
@@ -802,9 +854,20 @@ class Rocket {
       this.pos[0], this.pos[1], this.width * 0.06, this.height * 0.06);
   }
 
-  move(){
-    this.pos[0] += this.vel[0];
-    this.pos[1] += this.vel[1];
+  addSpeed() {
+    if (this.vel[0] > 0) {
+      this.vel[0] += 0.15;
+    } else if (this.vel[0] < 0) {
+      this.vel[0] -= 0.15;
+    }
+  }
+
+  move(timeDelta){
+    const velScale = timeDelta / NORMAL_FPS_TIME_DELTA,
+    offsetX = this.vel[0] * velScale,
+    offsetY = this.vel[1] * velScale;
+    this.pos[0] += offsetX;
+    this.pos[1] += offsetY;
 
     if (this.pos[0] < -100 || this.pos[0] > 900 || this.pos[1] > 550 || this.pos[1] < 0) {
       this.game.removeRocket();

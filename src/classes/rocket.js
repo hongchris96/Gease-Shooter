@@ -3,7 +3,7 @@ const Util = require('../utils/utils');
 
 const canvas = document.getElementById('game-canvas');
 const cntx = canvas.getContext('2d');
-
+const NORMAL_FPS_TIME_DELTA = 1000 / 60;
 
 class Rocket {
   constructor(options){
@@ -31,9 +31,20 @@ class Rocket {
       this.pos[0], this.pos[1], this.width * 0.06, this.height * 0.06);
   }
 
-  move(){
-    this.pos[0] += this.vel[0];
-    this.pos[1] += this.vel[1];
+  addSpeed() {
+    if (this.vel[0] > 0) {
+      this.vel[0] += 0.15;
+    } else if (this.vel[0] < 0) {
+      this.vel[0] -= 0.15;
+    }
+  }
+
+  move(timeDelta){
+    const velScale = timeDelta / NORMAL_FPS_TIME_DELTA,
+    offsetX = this.vel[0] * velScale,
+    offsetY = this.vel[1] * velScale;
+    this.pos[0] += offsetX;
+    this.pos[1] += offsetY;
 
     if (this.pos[0] < -100 || this.pos[0] > 900 || this.pos[1] > 550 || this.pos[1] < 0) {
       this.game.removeRocket();
