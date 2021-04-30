@@ -13,13 +13,28 @@ class GameView {
     this.game.addKeysListener();
     this.game.removeKeysListener();
     this.game.timePassed();
-    gameInterval = setInterval(() => {
+    this.lastTime = 0;
+    requestAnimationFrame(this.gameloop.bind(this));
+    // gameInterval = setInterval(() => {
+    //   if (!this.game.paused) {
+    //     this.game.checkCollision();
+    //     this.game.moveObjects();
+    //     this.game.draw(this.cntx);
+    //   }
+    // }, 17);
+  }
+
+  gameloop(time) {
+    const timeDelta = time - this.lastTime;
+    if (this.game !== undefined) {
       if (!this.game.paused) {
         this.game.checkCollision();
         this.game.moveObjects();
         this.game.draw(this.cntx);
       }
-    }, 17);
+    }
+    this.lastTime = time;
+    requestAnimationFrame(this.gameloop.bind(this));
   }
 
   pause() {

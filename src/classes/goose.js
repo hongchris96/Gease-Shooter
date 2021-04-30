@@ -10,7 +10,7 @@ class Goose {
     this.width = 660;
     this.height = 660;
     this.pos = options.pos;
-    this.vel = Util.randomVec(2);
+    this.vel = Util.randomVec(1);
     this.game = options.game;
     this.leftAirFrames = [[3, 1], [3, 2]];
     this.rightAirFrames = [[3, 0], [2, 2]];

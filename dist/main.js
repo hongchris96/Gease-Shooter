@@ -255,27 +255,33 @@ class Game {
     const explosions = this.explosions;
     for (let i = 0; i < bullets.length; i++) {
       for (let j = 0; j < geese.length; j++) {
-        if (this.bullets[i].hit(this.geese[j])) {
-          this.removeGoose(this.geese[j]);
-          this.removeBullet(this.bullets[i]);
+        if (this.bullets[i] !== undefined) {
+          if (this.bullets[i].hit(this.geese[j])) {
+            this.removeGoose(this.geese[j]);
+            this.removeBullet(this.bullets[i]);
+          }
         }
       }
     }
     for (let i = 0; i < rockets.length; i++) {
       for (let j = 0; j < geese.length; j++) {
-        if (this.rockets[i].hit(this.geese[j])) {
-          let site = [this.geese[j].pos[0] + 50, this.geese[j].pos[1] + 50];
-          let boom = new Explosion({pos: site, game: this});
-          this.removeGoose(this.geese[j]);
-          this.removeRocket(this.rockets[i]);
-          this.addExplosion(boom);
+        if (this.rockets[i] !== undefined) {
+          if (this.rockets[i].hit(this.geese[j])) {
+            let site = [this.geese[j].pos[0] + 50, this.geese[j].pos[1] + 50];
+            let boom = new Explosion({pos: site, game: this});
+            this.removeGoose(this.geese[j]);
+            this.removeRocket(this.rockets[i]);
+            this.addExplosion(boom);
+          }
         }
       }
     }
     for (let i = 0; i < explosions.length; i++) {
       for (let j = 0; j < geese.length; j++) {
-        if (this.explosions[i].hit(this.geese[j])) {
-          this.removeGoose(this.geese[j]);
+        if (this.explosions[i] !== undefined) {
+          if (this.explosions[i].hit(this.geese[j])) {
+            this.removeGoose(this.geese[j]);
+          }
         }
       }
     }
@@ -307,12 +313,12 @@ class Game {
     if (pos[0] > this.DIM_X + 100) { 
       x -= this.DIM_X + 200; 
       y = Math.random() * this.DIM_Y - 70;
-      newVel = Util.randomVec(2);
+      newVel = Util.randomVec(1);
     }
     else if (pos[0] < -100) {
       x += this.DIM_X + 100;
       y = Math.random() * this.DIM_Y - 70;
-      newVel = Util.randomVec(2);
+      newVel = Util.randomVec(1);
     }
     return [[x, y], newVel];
   }
@@ -417,13 +423,28 @@ class GameView {
     this.game.addKeysListener();
     this.game.removeKeysListener();
     this.game.timePassed();
-    gameInterval = setInterval(() => {
+    this.lastTime = 0;
+    requestAnimationFrame(this.gameloop.bind(this));
+    // gameInterval = setInterval(() => {
+    //   if (!this.game.paused) {
+    //     this.game.checkCollision();
+    //     this.game.moveObjects();
+    //     this.game.draw(this.cntx);
+    //   }
+    // }, 17);
+  }
+
+  gameloop(time) {
+    const timeDelta = time - this.lastTime;
+    if (this.game !== undefined) {
       if (!this.game.paused) {
         this.game.checkCollision();
         this.game.moveObjects();
         this.game.draw(this.cntx);
       }
-    }, 17);
+    }
+    this.lastTime = time;
+    requestAnimationFrame(this.gameloop.bind(this));
   }
 
   pause() {
@@ -459,7 +480,7 @@ class Goose {
     this.width = 660;
     this.height = 660;
     this.pos = options.pos;
-    this.vel = Util.randomVec(2);
+    this.vel = Util.randomVec(1);
     this.game = options.game;
     this.leftAirFrames = [[3, 1], [3, 2]];
     this.rightAirFrames = [[3, 0], [2, 2]];
@@ -555,8 +576,9 @@ class Robot {
   constructor(options){
     this.width = 920;
     this.height = 640;
+    this.prevPos = [380, 410];
     this.pos = [380, 410];
-    this.vel = [10, 10];
+    this.vel = [17, 17];
     this.game = options.game;
     this.leftAirFrames = [0, 0];
     this.rightAirFrames = [1, 0];
@@ -572,7 +594,10 @@ class Robot {
   }
   
   draw(dirArray) {
-    let firstTwoKeys = dirArray.slice(0, 2);
+    let firstTwoKeys = [];
+    if (dirArray !== undefined) {
+      firstTwoKeys = dirArray.slice(0, 2);
+    }
     if (firstTwoKeys.includes("left")) {
       if (this.pos[1] < 400) {
         this.frameX = this.leftAirFrames[0];
@@ -631,6 +656,9 @@ class Robot {
   }
 
   move(dirArray) {
+    if (dirArray === undefined) {
+      dirArray = [];
+    }
     if (dirArray.length === 1){
       switch(dirArray[0]) {
         case "left":
@@ -753,6 +781,7 @@ class Robot {
     }
     return false;
   }
+
 }
 
 function drawSprite(img, sX, sY, sW, sH, dX, dY, dW, dH){

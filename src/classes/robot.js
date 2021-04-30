@@ -11,8 +11,9 @@ class Robot {
   constructor(options){
     this.width = 920;
     this.height = 640;
+    this.prevPos = [380, 410];
     this.pos = [380, 410];
-    this.vel = [10, 10];
+    this.vel = [17, 17];
     this.game = options.game;
     this.leftAirFrames = [0, 0];
     this.rightAirFrames = [1, 0];
@@ -28,7 +29,10 @@ class Robot {
   }
   
   draw(dirArray) {
-    let firstTwoKeys = dirArray.slice(0, 2);
+    let firstTwoKeys = [];
+    if (dirArray !== undefined) {
+      firstTwoKeys = dirArray.slice(0, 2);
+    }
     if (firstTwoKeys.includes("left")) {
       if (this.pos[1] < 400) {
         this.frameX = this.leftAirFrames[0];
@@ -87,6 +91,9 @@ class Robot {
   }
 
   move(dirArray) {
+    if (dirArray === undefined) {
+      dirArray = [];
+    }
     if (dirArray.length === 1){
       switch(dirArray[0]) {
         case "left":
@@ -209,6 +216,7 @@ class Robot {
     }
     return false;
   }
+
 }
 
 function drawSprite(img, sX, sY, sW, sH, dX, dY, dW, dH){
