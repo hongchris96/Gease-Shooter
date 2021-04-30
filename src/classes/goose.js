@@ -10,6 +10,7 @@ class Goose {
     this.width = 660;
     this.height = 660;
     this.pos = options.pos;
+    this.prevPos = this.pos;
     this.vel = Util.randomVec(1);
     this.game = options.game;
     this.leftAirFrames = [[3, 1], [3, 2]];
@@ -43,9 +44,14 @@ class Goose {
   }
   
   draw(cntx){
-    this.frameCount += 1;
-    if (this.frameCount === 12) {
-      this.frameCount = 0;
+  
+    if (Math.abs(this.pos[0] - this.prevPos[0]) > 13) {
+      this.prevPos = this.pos;
+    }
+
+    if (Math.round(Math.abs(this.pos[0] - this.prevPos[0])) === 12) {
+      debugger
+      this.prevPos = this.pos;
       this.counter += 1;
       if (this.vel[0] < 0) {
         if (this.pos[1] < 400) {
@@ -68,6 +74,7 @@ class Goose {
     drawSprite(this.img, this.width * this.frameX, this.height * this.frameY, this.width, this.height,
       this.pos[0], this.pos[1], this.width * 0.15, this.height * 0.15);
   }
+  
   move(timeDelta){
     const velScale = timeDelta / NORMAL_FPS_TIME_DELTA,
     offsetX = this.vel[0] * velScale,

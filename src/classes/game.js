@@ -7,7 +7,7 @@ class Game {
   constructor(options) {
     this.DIM_X = 900;
     this.DIM_Y = 550;
-    this.NUM_GEESE = 8;
+    this.NUM_GEESE = 4;
     this.geese = [];
     this.addGoose();
     this.bullets = [];
@@ -48,7 +48,7 @@ class Game {
   }
 
   addGoose() {
-    for (let i = 0; i < this.NUM_GEESE; i++) {
+    while (this.geese.length < this.NUM_GEESE) {
       let newGoose = new Goose({pos: this.randomPos(), game: this});
       this.geese.push(newGoose);
     }
@@ -121,6 +121,19 @@ class Game {
     cntx.fillStyle = "black";
     cntx.textAlign = "right";
     cntx.fillText(`${this.points} \u{1F536}`, 870, 60);
+    if (this.points === 100) {
+      this.NUM_GEESE = 8;
+      this.addGoose();
+    } else if (this.points === 500) {
+      this.NUM_GEESE = 12;
+      this.addGoose();
+    } else if (this.points === 2000) {
+      this.NUM_GEESE = 20;
+      this.addGoose();
+    } else if (this.points === 4000) {
+      this.NUM_GEESE = 100;
+      this.addGoose();
+    }
   }
 
   checkCollision() {
