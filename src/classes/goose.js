@@ -3,7 +3,7 @@ const Util = require('../utils/utils');
 
 const canvas = document.getElementById('game-canvas');
 const cntx = canvas.getContext('2d');
-
+const NORMAL_FPS_TIME_DELTA = 1000 / 60;
 
 class Goose {
   constructor(options){
@@ -68,9 +68,12 @@ class Goose {
     drawSprite(this.img, this.width * this.frameX, this.height * this.frameY, this.width, this.height,
       this.pos[0], this.pos[1], this.width * 0.15, this.height * 0.15);
   }
-  move(){
-    this.pos[0] += this.vel[0];
-    this.pos[1] += this.vel[1];
+  move(timeDelta){
+    const velScale = timeDelta / NORMAL_FPS_TIME_DELTA,
+    offsetX = this.vel[0] * velScale,
+    offsetY = this.vel[1] * velScale;
+    this.pos[0] += offsetX;
+    this.pos[1] += offsetY;
     let newVal = this.game.wrap(this.pos, this.vel);
     this.pos = newVal[0];
     this.vel = newVal[1];

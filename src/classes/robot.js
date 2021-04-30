@@ -5,15 +5,14 @@ const Rocket = require('./rocket');
 // 1840 × 1280
 const canvas = document.getElementById('game-canvas');
 const cntx = canvas.getContext('2d');
-
+const NORMAL_FPS_TIME_DELTA = 1000 / 60;
 
 class Robot {
   constructor(options){
     this.width = 920;
     this.height = 640;
-    this.prevPos = [380, 410];
     this.pos = [380, 410];
-    this.vel = [17, 17];
+    this.vel = [0, 0];
     this.game = options.game;
     this.leftAirFrames = [0, 0];
     this.rightAirFrames = [1, 0];
@@ -90,67 +89,91 @@ class Robot {
     }
   }
 
-  move(dirArray) {
-    if (dirArray === undefined) {
-      dirArray = [];
+  addSpeed(dirArray) {
+    if (dirArray === undefined) dirArray = [];
+
+    if (dirArray.length === 0) this.vel = [0, 0];
+
+    if (!dirArray.includes("up")) {
+      if (this.pos[1] < 400) this.vel[1] = 1;
+      else if (this.pos[1] >= 400) this.vel[1] = 0;
     }
+
     if (dirArray.length === 1){
       switch(dirArray[0]) {
         case "left":
-          if (this.pos[0] > -40) this.pos[0] -= this.vel[0];
+          if (this.pos[0] > -40) this.vel[0] = -6;
           break;
         case "up":
-          if (this.pos[1] > -20) this.pos[1] -= this.vel[1];
+          if (this.pos[1] > -20) this.vel[1] = -8;
           break;
         case "right":
-          if (this.pos[0] < 800) this.pos[0] += this.vel[0];
+          if (this.pos[0] < 800) this.vel[0] = 6;
           break;
         case "down":
-          if (this.pos[1] < 460) this.pos[1] += this.vel[1];
+          if (this.pos[1] < 460) this.vel[1] = 3;
           break;
       }
     } else if (dirArray.length > 1) {
       let firstTwoKeys = dirArray.slice(0, 2);
       if ((firstTwoKeys.includes("up") && firstTwoKeys.includes("down")) || 
           (firstTwoKeys.includes("left") && firstTwoKeys.includes("right"))) {
-            switch(firstTwoKeys[0]) {
+            switch(firstTwoKeys[1]) {
               case "left":
-                if (this.pos[0] > -40) this.pos[0] -= this.vel[0];
+                if (this.pos[0] > -40) this.vel[0] = -6;
                 break;
               case "up":
-                if (this.pos[1] > -20) this.pos[1] -= this.vel[1];
+                if (this.pos[1] > -20) this.vel[1] = -3;
                 break;
               case "right":
-                if (this.pos[0] < 800) this.pos[0] += this.vel[0];
+                if (this.pos[0] < 800) this.vel[0] = 6;
                 break;
               case "down":
-                if (this.pos[1] < 460) this.pos[1] += this.vel[1];
+                if (this.pos[1] < 460) this.vel[1] = 3;
                 break;
             }
       } else {
         if (firstTwoKeys.includes("up") && firstTwoKeys.includes("left")) {
           if (this.pos[0] > -40 && this.pos[1] > -20) {
-            this.pos[0] -= this.vel[0];
-            this.pos[1] -= this.vel[1];
+            this.vel[0] = -6;
+            this.vel[1] = -3;
           }
         } else if (firstTwoKeys.includes("up") && firstTwoKeys.includes("right")) {
           if (this.pos[0] < 800 && this.pos[1] > -20) {
-            this.pos[0] += this.vel[0];
-            this.pos[1] -= this.vel[1];
+            this.vel[0] = 6;
+            this.vel[1] = -3;
           }
         } else if (firstTwoKeys.includes("down") && firstTwoKeys.includes("left")) {
           if (this.pos[0] > -40 && this.pos[1] < 460) {
-            this.pos[0] -= this.vel[0];
-            this.pos[1] += this.vel[1];
+            this.vel[0] = -6;
+            this.vel[1] = 3;
           }
         } else if (firstTwoKeys.includes("down") && firstTwoKeys.includes("right")) {
           if (this.pos[0] < 800 && this.pos[1] < 460) {
-            this.pos[0] += this.vel[0];
-            this.pos[1] += this.vel[1];
+            this.vel[0] = 6;
+            this.vel[1] = 3;
           }
         }
       }
     }
+  }
+
+  move(timeDelta) {
+  
+    const velScale = timeDelta / NORMAL_FPS_TIME_DELTA,
+    offsetX = this.vel[0] * velScale,
+    offsetY = this.vel[1] * velScale;
+    if (this.pos[0] + offsetX < 800 && this.pos[0] + offsetX > -40) {
+      this.pos[0] += offsetX;
+    }
+    if (this.pos[1] + offsetY < 460 && this.pos[1] + offsetY > -20) {
+      if (this.pos[1] >= 400 && this.vel[1] === 1) {
+        this.pos[1] = this.pos[1];
+      } else {
+        this.pos[1] += offsetY;
+      }
+    }
+    
   }
 
   switchWeapon(weaponType) {
@@ -180,10 +203,10 @@ class Robot {
     let rocketVel;
     let rocketPos;
     if (this.frameX === this.leftAirFrames[0] || this.frameX === this.leftGroundFrames[0]) {
-      rocketVel = [-5, 0];
+      rocketVel = [-2, 0];
       rocketPos = [this.pos[0] - 30, this.pos[1] + 50];
     } else if (this.frameX === this.rightAirFrames[0] || this.frameX === this.rightGroundFrames[0]) {
-      rocketVel = [5, 0];
+      rocketVel = [2, 0];
       rocketPos = [this.pos[0] + 70, this.pos[1] + 50];
     }
 

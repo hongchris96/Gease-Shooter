@@ -15,21 +15,14 @@ class GameView {
     this.game.timePassed();
     this.lastTime = 0;
     requestAnimationFrame(this.gameloop.bind(this));
-    // gameInterval = setInterval(() => {
-    //   if (!this.game.paused) {
-    //     this.game.checkCollision();
-    //     this.game.moveObjects();
-    //     this.game.draw(this.cntx);
-    //   }
-    // }, 17);
   }
 
   gameloop(time) {
     const timeDelta = time - this.lastTime;
-    if (this.game !== undefined) {
+    if (this.game !== null) {
       if (!this.game.paused) {
         this.game.checkCollision();
-        this.game.moveObjects();
+        this.game.moveObjects(timeDelta);
         this.game.draw(this.cntx);
       }
     }
@@ -42,7 +35,6 @@ class GameView {
   }
 
   destroy() {
-    clearInterval(gameInterval);
     this.game.removeEventListener4ThisGame();
     this.game = null;
   }

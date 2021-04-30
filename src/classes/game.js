@@ -169,16 +169,18 @@ class Game {
     }
   }
 
-  moveObjects() {
+  moveObjects(timeDelta) {
+    this.robo.move(timeDelta);
     this.geese.forEach(goose => {
-      goose.move();
+      goose.move(timeDelta);
     });
     this.bullets.forEach(bullet => {
-      bullet.move();
-    })
+      bullet.move(timeDelta);
+    });
     this.rockets.forEach(rocket => {
-      rocket.move();
-    })
+      rocket.addSpeed();
+      rocket.move(timeDelta);
+    });
   }
 
   wrap(pos, vel) {
@@ -231,7 +233,7 @@ class Game {
         }
         break;
     }
-    this.robo.move(this.actionKeys);
+    this.robo.addSpeed(this.actionKeys);
   }
 
   keyupAction(e) {
@@ -254,7 +256,7 @@ class Game {
         }
         break;
     }
-    this.robo.move(this.actionKeys);
+    this.robo.addSpeed(this.actionKeys);
   }
 
   addKeysListener() {
