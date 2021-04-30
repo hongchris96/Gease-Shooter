@@ -57,7 +57,7 @@ class Bullet {
     const bulletY = this.pos[1];
     const targetX = target.pos[0];
     const targetY = target.pos[1];
-    if (bulletX >= targetX && bulletX < targetX + 100 && bulletY >= targetY && bulletY < targetY + 100) {
+    if (bulletX >= targetX && bulletX < targetX + 80 && bulletY >= targetY - 10 && bulletY < targetY + 80) {
       return true;
     }
     return false;
@@ -135,7 +135,7 @@ class Game {
   constructor(options) {
     this.DIM_X = 900;
     this.DIM_Y = 550;
-    this.NUM_GEESE = 8;
+    this.NUM_GEESE = 4;
     this.geese = [];
     this.addGoose();
     this.bullets = [];
@@ -176,7 +176,7 @@ class Game {
   }
 
   addGoose() {
-    for (let i = 0; i < this.NUM_GEESE; i++) {
+    while (this.geese.length < this.NUM_GEESE) {
       let newGoose = new Goose({pos: this.randomPos(), game: this});
       this.geese.push(newGoose);
     }
@@ -220,7 +220,7 @@ class Game {
 
   randomPos() {
     let x = Math.random() > 0.5 ? -100 : this.DIM_X + 100; 
-    let y = Math.random() * this.DIM_Y - 70;
+    let y = (Math.random() * (this.DIM_Y - 100)) + 10;
     return [x, y]; 
   }
 
@@ -249,6 +249,19 @@ class Game {
     cntx.fillStyle = "black";
     cntx.textAlign = "right";
     cntx.fillText(`${this.points} \u{1F536}`, 870, 60);
+    if (this.points === 100) {
+      this.NUM_GEESE = 8;
+      this.addGoose();
+    } else if (this.points === 500) {
+      this.NUM_GEESE = 12;
+      this.addGoose();
+    } else if (this.points === 2000) {
+      this.NUM_GEESE = 20;
+      this.addGoose();
+    } else if (this.points === 4000) {
+      this.NUM_GEESE = 100;
+      this.addGoose();
+    }
   }
 
   checkCollision() {
@@ -317,12 +330,12 @@ class Game {
     let newVel = vel;
     if (pos[0] > this.DIM_X + 100) { 
       x -= this.DIM_X + 200; 
-      y = Math.random() * this.DIM_Y - 70;
+      y = (Math.random() * (this.DIM_Y - 100)) + 10;
       newVel = Util.randomVec(1);
     }
     else if (pos[0] < -100) {
       x += this.DIM_X + 100;
-      y = Math.random() * this.DIM_Y - 70;
+      y = (Math.random() * (this.DIM_Y - 100)) + 10;
       newVel = Util.randomVec(1);
     }
     return [[x, y], newVel];
@@ -477,6 +490,7 @@ class Goose {
     this.width = 660;
     this.height = 660;
     this.pos = options.pos;
+    this.prevPos = this.pos;
     this.vel = Util.randomVec(1);
     this.game = options.game;
     this.leftAirFrames = [[3, 1], [3, 2]];
@@ -510,9 +524,14 @@ class Goose {
   }
   
   draw(cntx){
-    this.frameCount += 1;
-    if (this.frameCount === 12) {
-      this.frameCount = 0;
+  
+    if (Math.abs(this.pos[0] - this.prevPos[0]) > 13) {
+      this.prevPos = this.pos;
+    }
+
+    if (Math.round(Math.abs(this.pos[0] - this.prevPos[0])) === 12) {
+      debugger
+      this.prevPos = this.pos;
       this.counter += 1;
       if (this.vel[0] < 0) {
         if (this.pos[1] < 400) {
@@ -535,6 +554,7 @@ class Goose {
     drawSprite(this.img, this.width * this.frameX, this.height * this.frameY, this.width, this.height,
       this.pos[0], this.pos[1], this.width * 0.15, this.height * 0.15);
   }
+  
   move(timeDelta){
     const velScale = timeDelta / NORMAL_FPS_TIME_DELTA,
     offsetX = this.vel[0] * velScale,
@@ -597,7 +617,16 @@ class Robot {
     if (dirArray !== undefined) {
       firstTwoKeys = dirArray.slice(0, 2);
     }
-    if (firstTwoKeys.includes("left")) {
+
+    if (firstTwoKeys.includes("left") && firstTwoKeys.includes("right")) {
+      if (this.pos[1] < 400) {
+        this.frameX = firstTwoKeys[1] === "left" ? this.leftAirFrames[0] : this.rightAirFrames[0];
+        this.frameY = firstTwoKeys[1] === "left" ? this.leftAirFrames[1] : this.rightAirFrames[1];
+      } else {
+        this.frameX = firstTwoKeys[1] === "left" ? this.leftGroundFrames[0] : this.rightGroundFrames[0];
+        this.frameY = firstTwoKeys[1] === "left" ? this.leftGroundFrames[1] : this.rightGroundFrames[1];
+      }
+    } else if (firstTwoKeys.includes("left") && !firstTwoKeys.includes("right")) {
       if (this.pos[1] < 400) {
         this.frameX = this.leftAirFrames[0];
         this.frameY = this.leftAirFrames[1];
@@ -605,7 +634,7 @@ class Robot {
         this.frameX = this.leftGroundFrames[0];
         this.frameY = this.leftGroundFrames[1];
       }
-    } else if (firstTwoKeys.includes("right")){
+    } else if (firstTwoKeys.includes("right") && !firstTwoKeys.includes("left")){
       if (this.pos[1] < 400) {
         this.frameX = this.rightAirFrames[0];
         this.frameY = this.rightAirFrames[1];
