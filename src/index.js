@@ -13,11 +13,14 @@ document.addEventListener("DOMContentLoaded", (e) => {
   const music = document.getElementById('theme-music');
   const musicIcon = document.getElementById('music-icon');
   const gameMenu = document.getElementById('menu-icon');
+  const modalBackground = document.querySelector('.modal-background');
+  const modal = document.querySelector('.modal');
+  const exitButton = document.querySelector('.exit-button');
+  const restartButton = document.querySelector('.restart-button');
   
   const kanvas = document.getElementById("game-canvas");
   const cntx = kanvas.getContext("2d");
-
-  const currentGame = [];
+  const zaGame = new GameView(cntx);
 
   music.volume = 0.3;
 
@@ -44,14 +47,55 @@ document.addEventListener("DOMContentLoaded", (e) => {
       kanvas.classList.add('fade-in');
       gameMenu.classList.remove('hidden');
       gameMenu.classList.add('fade-in');
-      const zaGame = new GameView(cntx);
-      currentGame.push(zaGame);
       zaGame.start();
     }, 1000);
   });
 
   gameMenu.addEventListener('click', () => {
-    currentGame[0].pause();
+    zaGame.pause();
+    modalBackground.classList.remove('hidden');
+    modalBackground.classList.add('fade-in');
+    modal.classList.remove('hidden');
+    modal.classList.add('fade-in');
+  });
+
+  modalBackground.addEventListener('click', () => {
+    zaGame.pause();
+    modalBackground.classList.remove('fade-in');
+    modalBackground.classList.add('hidden');
+    modal.classList.remove('fade-in');
+    modal.classList.add('hidden');
+  });
+
+  exitButton.addEventListener('click', () => {
+    modalBackground.classList.remove('fade-in');
+    modalBackground.classList.add('hidden');
+    modal.classList.remove('fade-in');
+    modal.classList.add('hidden');
+    kanvas.classList.remove('fade-in');
+    kanvas.classList.add('hidden');
+    gameMenu.classList.remove('fade-in');
+    gameMenu.classList.add('hidden');
+    zaGame.destroy();
+    setTimeout(() => {
+      menu.classList.remove('hidden');
+      menu.classList.add('fade-in');
+    }, 1000);
+  });
+
+  restartButton.addEventListener('click', () => {
+    modalBackground.classList.remove('fade-in');
+    modalBackground.classList.add('hidden');
+    modal.classList.remove('fade-in');
+    modal.classList.add('hidden');
+    kanvas.classList.remove('fade-in');
+    kanvas.classList.add('hidden');
+    zaGame.destroy();
+    setTimeout(() => {
+      kanvas.classList.remove('hidden');
+      kanvas.classList.add('fade-in');
+      zaGame.start();
+    }, 1000);
   });
 
   instructionButton.addEventListener('click', () => {
