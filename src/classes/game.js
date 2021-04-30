@@ -11,8 +11,10 @@ class Game {
     this.geese = [];
     this.addGoose();
     this.bullets = [];
+    this.rocketMessage = false;
     this.rockets = [];
     this.explosions = [];
+    this.laserMessage = false;
     this.robo = new Robo({game: this});
     this.actionKeys = [];
     this.points = 0;
@@ -73,6 +75,26 @@ class Game {
     }
   }
 
+  unlockRocket(cntx) {
+    cntx.font = "25px Comic Sans MS";
+    cntx.fillStyle = "#b20000";
+    cntx.textAlign = "center";
+    cntx.fillText("You have unlocked Rockets. Press [2] to equip.", 450, 50);
+    setTimeout(() => {
+      this.rocketMessage = false;
+    }, 3000);
+  }
+
+  unlockLaser(cntx) {
+    cntx.font = "25px Comic Sans MS";
+    cntx.fillStyle = "#b20000";
+    cntx.textAlign = "center";
+    cntx.fillText("You have unlocked Laser. Press [3] to equip.", 450, 50);
+    setTimeout(() => {
+      this.laserMessage = false;
+    }, 3000);
+  }
+
   addRocket(rocket) {
     this.rockets.push(rocket);
   }
@@ -124,15 +146,27 @@ class Game {
     if (this.points === 100) {
       this.NUM_GEESE = 8;
       this.addGoose();
-    } else if (this.points === 500) {
+    } else if (this.points >= 500 && this.points < 600) {
       this.NUM_GEESE = 12;
-      this.addGoose();
-    } else if (this.points === 2000) {
+      if (this.geese.length < 12) this.addGoose();
+    } else if (this.points >= 2000 && this.points < 2100) {
       this.NUM_GEESE = 20;
-      this.addGoose();
-    } else if (this.points === 4000) {
+      if (this.geese.length < 20) this.addGoose();
+    } else if (this.points >= 4000 && this.points < 4200) {
       this.NUM_GEESE = 100;
-      this.addGoose();
+      if (this.geese.length < 100) this.addGoose();
+    }
+    if (this.points === 100) {
+      this.rocketMessage = true;
+    }
+    if (this.rocketMessage) {
+      this.unlockRocket(cntx);
+    }
+    if (this.points >= 500 && this.points < 600) {
+      this.laserMessage = true;
+    }
+    if (this.laserMessage) {
+      this.unlockLaser(cntx);
     }
   }
 
@@ -231,10 +265,10 @@ class Game {
         this.robo.switchWeapon('pistol');
         break;
       case "2":
-        this.robo.switchWeapon('rocket');
+        if (this.points >= 100) this.robo.switchWeapon('rocket');
         break;
       case "3":
-        this.robo.switchWeapon('laser');
+        if (this.points >= 500) this.robo.switchWeapon('laser');
         break;
       case " ":
         if (this.robo.weapon === 'pistol') {
