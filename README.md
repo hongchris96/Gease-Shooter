@@ -23,7 +23,7 @@ Code:
 const things = "things";
 ```
 
-![image description]()
+![movement1](https://github.com/hongchris96/Geese-Shooter/blob/main/readme/movement-1.gif)
 
 Description Here
 ```javascript
