@@ -1036,10 +1036,13 @@ document.addEventListener("DOMContentLoaded", (e) => {
   const cntx = kanvas.getContext("2d");
   const zaGame = new GameView(cntx);
 
-  music.volume = 0.2;
+  music.volume = 0.25;
+  music.loop = true;
 
   title.addEventListener('click', () => {
     title.classList.add('hidden');
+    music.play();
+    musicIcon.src = "./src/assets/images/music_play_icon.png";
     phrases.forEach((phrase, idx) => {
       setTimeout(() => {
         phrase.classList.remove('hidden');
@@ -1131,10 +1134,28 @@ document.addEventListener("DOMContentLoaded", (e) => {
   musicIcon.addEventListener('click', () => {
     if (music.paused) {
       music.play();
-      musicIcon.src = "./src/assets/images/music_play_icon.png";
     } else {
       music.pause();
+    }
+  });
+
+  musicIcon.addEventListener('mouseenter', () => {
+    let srcArray = musicIcon.src.split('/');
+    if (srcArray[srcArray.length-1] === "music_pause_icon.png") {
+      musicIcon.src = "./src/assets/images/music_play_icon.png";
+    } else {
       musicIcon.src = "./src/assets/images/music_pause_icon.png";
+    }
+  });
+
+  musicIcon.addEventListener('mouseleave', () => {
+    let srcArray = musicIcon.src.split('/');
+    if (srcArray[srcArray.length-1] === "music_pause_icon.png") {
+      if (music.paused) musicIcon.src = "./src/assets/images/music_pause_icon.png";
+      else musicIcon.src = "./src/assets/images/music_play_icon.png";
+    } else {
+      if (music.paused) musicIcon.src = "./src/assets/images/music_pause_icon.png";
+      else musicIcon.src = "./src/assets/images/music_play_icon.png";
     }
   });
 
