@@ -69,8 +69,8 @@ body {
 
 .game-over {
     position: absolute;
-    width: 300px;
-    height: 200px;
+    width: 450px;
+    height: 350px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -82,22 +82,48 @@ body {
     z-index: 10;
 }
 
-.game-over > p:hover {
+
+.game-over > h1.win-lose {
+    font-size: 28px;
+    margin-bottom: 30px;
+}
+
+.game-over > .lose-only {
+    color: rgb(191, 0, 0);
+}
+
+.game-over > .win-only {
+    color: rgb(137, 213, 24);
+}
+
+.game-over > p.game-over-message {
+    font-size: 16px;
+    text-align: center;
+    line-height: 1.4;
+    width: 80%;
+    margin-bottom: 70px;
+}
+
+.game-over > p.play-again-button {
+    position: absolute;
+    bottom: 110px;
+    cursor: pointer;
+}
+.game-over > p.play-again-button:hover {
     font-size: 20px;
     text-shadow: 0 0 10px rgb(21, 255, 53);
     transition: 0.3s;
 }
 
-.game-over > p:first-of-type {
-    position: absolute;
-    top: 70px;
-    cursor: pointer;
-}
-
-.game-over > p:last-of-type {
+.game-over > p.game-over-exit-button {
     position: absolute;
     cursor: pointer;
     bottom: 70px;
+}
+.game-over > p.game-over-exit-button:hover {
+    font-size: 20px;
+    text-shadow: 0 0 10px rgb(21, 255, 53);
+    transition: 0.3s;
 }
 
 #menu-icon {

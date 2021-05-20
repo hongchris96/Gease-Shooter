@@ -147,17 +147,17 @@ class Game {
     cntx.textAlign = "right";
     cntx.fillText(`${this.points} \u{1F536}`, 870, 60);
     if (this.points === 100) {
-      this.NUM_GEESE = 8;
+      this.NUM_GEESE = 6;
       this.addGoose();
     } else if (this.points >= 500 && this.points < 600) {
       this.NUM_GEESE = 12;
       if (this.geese.length < 12) this.addGoose();
     } else if (this.points >= 2000 && this.points < 2100) {
-      this.NUM_GEESE = 20;
-      if (this.geese.length < 20) this.addGoose();
+      this.NUM_GEESE = 16;
+      if (this.geese.length < 16) this.addGoose();
     } else if (this.points >= 4000 && this.points < 4200) {
-      this.NUM_GEESE = 100;
-      if (this.geese.length < 100) this.addGoose();
+      this.NUM_GEESE = 25;
+      if (this.geese.length < 25) this.addGoose();
     }
     if (this.points === 100) {
       this.rocketMessage = true;

@@ -275,17 +275,17 @@ class Game {
     cntx.textAlign = "right";
     cntx.fillText(`${this.points} \u{1F536}`, 870, 60);
     if (this.points === 100) {
-      this.NUM_GEESE = 8;
+      this.NUM_GEESE = 6;
       this.addGoose();
     } else if (this.points >= 500 && this.points < 600) {
       this.NUM_GEESE = 12;
       if (this.geese.length < 12) this.addGoose();
     } else if (this.points >= 2000 && this.points < 2100) {
-      this.NUM_GEESE = 20;
-      if (this.geese.length < 20) this.addGoose();
+      this.NUM_GEESE = 16;
+      if (this.geese.length < 16) this.addGoose();
     } else if (this.points >= 4000 && this.points < 4200) {
-      this.NUM_GEESE = 100;
-      if (this.geese.length < 100) this.addGoose();
+      this.NUM_GEESE = 25;
+      if (this.geese.length < 25) this.addGoose();
     }
     if (this.points === 100) {
       this.rocketMessage = true;
@@ -468,6 +468,8 @@ const Game = __webpack_require__(/*! ./game */ "./src/classes/game.js");
 let gameInterval;
 const gameOverModalBackground = document.querySelector('.game-over-modal-background');
 const gameOver = document.querySelector('.game-over');
+const gameOverHead = document.querySelector('h1.win-lose');
+const gameOverMessage = document.querySelector('p.game-over-message');
 
 class GameView {
   constructor(cntx) {
@@ -485,6 +487,7 @@ class GameView {
   }
 
   gameloop(time) {
+    // rocket velocity gets faster every new game, need a way to restart gameloop
     const timeDelta = time - this.lastTime;
     if (this.game !== null) {
       if (!this.game.paused) {
@@ -492,17 +495,37 @@ class GameView {
         this.game.moveObjects(timeDelta);
         this.game.draw(this.cntx);
       }
+      if (this.game.timer === 0) { 
+          this.game.paused = true;
+          this.game.gameEnd = true;
+          let heading;
+          let gameMessage;
+          if (this.game.points >= 10000) {
+            heading = "You Win";
+            gameMessage = `Congrats! You have completed the game with ${this.game.points} points.`
+            gameOverHead.classList.remove('lose-only');
+            gameOverHead.classList.add('win-only');
+          } else if (this.game.points < 10000 && this.game.points > 7000) {
+            gameOverHead.classList.remove('win-only');
+            gameOverHead.classList.add('lose-only');
+            heading = "Game Over";
+            gameMessage = `Almost there but not quite, needed ${10000 - this.game.points} more points to win.`
+          } else {
+            gameOverHead.classList.remove('win-only');
+            gameOverHead.classList.add('lose-only');
+            heading = "Game Over";
+            gameMessage = `You need ${10000 - this.game.points} more points to win. Better luck next time.`
+          }
+          gameOverHead.textContent = heading;
+          gameOverMessage.textContent = gameMessage;
+          gameOverModalBackground.classList.remove('hidden');
+          gameOverModalBackground.classList.add('fade-in');
+          gameOver.classList.remove('hidden');
+          gameOver.classList.add('fade-in');
+      }
     }
     this.lastTime = time;
     requestAnimationFrame(this.gameloop.bind(this));
-    if (this.game.timer === 0) { 
-        this.game.paused = true;
-        this.game.gameEnd = true;
-        gameOverModalBackground.classList.remove('hidden');
-        gameOverModalBackground.classList.add('fade-in');
-        gameOver.classList.remove('hidden');
-        gameOver.classList.add('fade-in');
-    }
   }
 
   pause() {
