@@ -146,17 +146,19 @@ class Game {
     this.robo = new Robo({game: this});
     this.actionKeys = [];
     this.points = 0;
-    this.timer = 0;
+    this.timer = 60;
     this.paused = false;
     this.randomPos = this.randomPos.bind(this);
 
     this.keydownAction = this.keydownAction.bind(this);
     this.keyupAction = this.keyupAction.bind(this);
+
+    this.gameEnd = false;
   }
 
   timePassed() {
     if (!this.paused) {
-      setInterval(() => {this.timer += 1}, 1000);
+      setInterval(() => {this.timer -= 1}, 1000);
     }
   }
 
@@ -249,7 +251,8 @@ class Game {
   draw(cntx) {
     cntx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
     cntx.font = "100px Comic Sans MS";
-    cntx.fillStyle = "gray";
+    if (this.timer > 10) cntx.fillStyle = "gray";
+    else cntx.fillStyle = "red";
     cntx.textAlign = "left";
     cntx.globalAlpha = 0.2;
     cntx.fillText(`\u{1F553} ${this.showProperTime()}`, 240, 310);
@@ -463,6 +466,8 @@ module.exports = Game;
 const Game = __webpack_require__(/*! ./game */ "./src/classes/game.js");
 
 let gameInterval;
+const gameOverModalBackground = document.querySelector('.game-over-modal-background');
+const gameOver = document.querySelector('.game-over');
 
 class GameView {
   constructor(cntx) {
@@ -490,6 +495,14 @@ class GameView {
     }
     this.lastTime = time;
     requestAnimationFrame(this.gameloop.bind(this));
+    if (this.game.timer === 0) { 
+        this.game.paused = true;
+        this.game.gameEnd = true;
+        gameOverModalBackground.classList.remove('hidden');
+        gameOverModalBackground.classList.add('fade-in');
+        gameOver.classList.remove('hidden');
+        gameOver.classList.add('fade-in');
+    }
   }
 
   pause() {
@@ -564,7 +577,7 @@ class Goose {
     }
 
     if (Math.round(Math.abs(this.pos[0] - this.prevPos[0])) === 12) {
-      debugger
+
       this.prevPos = this.pos;
       this.counter += 1;
       if (this.vel[0] < 0) {
@@ -1030,8 +1043,12 @@ document.addEventListener("DOMContentLoaded", (e) => {
   const gameMenu = document.getElementById('menu-icon');
   const modalBackground = document.querySelector('.modal-background');
   const modal = document.querySelector('.modal');
+  const gameOverModalBackground = document.querySelector('.game-over-modal-background');
+  const gameOver = document.querySelector('.game-over');
   const exitButton = document.querySelector('.exit-button');
   const restartButton = document.querySelector('.restart-button');
+  const gameOverExitButton = document.querySelector('.game-over-exit-button');
+  const playAgainButton = document.querySelector('.play-again-button');
   
   const kanvas = document.getElementById("game-canvas");
   const cntx = kanvas.getContext("2d");
@@ -1106,6 +1123,37 @@ document.addEventListener("DOMContentLoaded", (e) => {
     modalBackground.classList.add('hidden');
     modal.classList.remove('fade-in');
     modal.classList.add('hidden');
+    kanvas.classList.remove('fade-in');
+    kanvas.classList.add('hidden');
+    zaGame.destroy();
+    setTimeout(() => {
+      kanvas.classList.remove('hidden');
+      kanvas.classList.add('fade-in');
+      zaGame.start();
+    }, 1000);
+  });
+
+  gameOverExitButton.addEventListener('click', () => {
+    gameOverModalBackground.classList.remove('fade-in');
+    gameOverModalBackground.classList.add('hidden');
+    gameOver.classList.remove('fade-in');
+    gameOver.classList.add('hidden');
+    kanvas.classList.remove('fade-in');
+    kanvas.classList.add('hidden');
+    gameMenu.classList.remove('fade-in');
+    gameMenu.classList.add('hidden');
+    zaGame.destroy();
+    setTimeout(() => {
+      menu.classList.remove('hidden');
+      menu.classList.add('fade-in');
+    }, 1000);
+  });
+
+  playAgainButton.addEventListener('click', () => {
+    gameOverModalBackground.classList.remove('fade-in');
+    gameOverModalBackground.classList.add('hidden');
+    gameOver.classList.remove('fade-in');
+    gameOver.classList.add('hidden');
     kanvas.classList.remove('fade-in');
     kanvas.classList.add('hidden');
     zaGame.destroy();

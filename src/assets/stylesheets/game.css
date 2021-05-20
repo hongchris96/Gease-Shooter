@@ -57,6 +57,49 @@ body {
   bottom: 70px;
 }
 
+.game-over-modal-background {
+    background-color: rgba(255, 255, 255, 0.399);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+}
+
+.game-over {
+    position: absolute;
+    width: 300px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    background-color: rgba(255, 255, 255, 0.954);
+    border-radius: 5px;
+    box-shadow: 0 0 20px rgb(203, 203, 203);
+    z-index: 10;
+}
+
+.game-over > p:hover {
+    font-size: 20px;
+    text-shadow: 0 0 10px rgb(21, 255, 53);
+    transition: 0.3s;
+}
+
+.game-over > p:first-of-type {
+    position: absolute;
+    top: 70px;
+    cursor: pointer;
+}
+
+.game-over > p:last-of-type {
+    position: absolute;
+    cursor: pointer;
+    bottom: 70px;
+}
+
 #menu-icon {
   position: absolute;
   top: 18px;

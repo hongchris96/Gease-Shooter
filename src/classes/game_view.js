@@ -1,6 +1,8 @@
 const Game = require('./game');
 
 let gameInterval;
+const gameOverModalBackground = document.querySelector('.game-over-modal-background');
+const gameOver = document.querySelector('.game-over');
 
 class GameView {
   constructor(cntx) {
@@ -28,6 +30,14 @@ class GameView {
     }
     this.lastTime = time;
     requestAnimationFrame(this.gameloop.bind(this));
+    if (this.game.timer === 0) { 
+        this.game.paused = true;
+        this.game.gameEnd = true;
+        gameOverModalBackground.classList.remove('hidden');
+        gameOverModalBackground.classList.add('fade-in');
+        gameOver.classList.remove('hidden');
+        gameOver.classList.add('fade-in');
+    }
   }
 
   pause() {

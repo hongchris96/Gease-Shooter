@@ -18,17 +18,19 @@ class Game {
     this.robo = new Robo({game: this});
     this.actionKeys = [];
     this.points = 0;
-    this.timer = 0;
+    this.timer = 60;
     this.paused = false;
     this.randomPos = this.randomPos.bind(this);
 
     this.keydownAction = this.keydownAction.bind(this);
     this.keyupAction = this.keyupAction.bind(this);
+
+    this.gameEnd = false;
   }
 
   timePassed() {
     if (!this.paused) {
-      setInterval(() => {this.timer += 1}, 1000);
+      setInterval(() => {this.timer -= 1}, 1000);
     }
   }
 
@@ -121,7 +123,8 @@ class Game {
   draw(cntx) {
     cntx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
     cntx.font = "100px Comic Sans MS";
-    cntx.fillStyle = "gray";
+    if (this.timer > 10) cntx.fillStyle = "gray";
+    else cntx.fillStyle = "red";
     cntx.textAlign = "left";
     cntx.globalAlpha = 0.2;
     cntx.fillText(`\u{1F553} ${this.showProperTime()}`, 240, 310);
