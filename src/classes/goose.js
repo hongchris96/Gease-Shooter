@@ -50,7 +50,7 @@ class Goose {
     }
 
     if (Math.round(Math.abs(this.pos[0] - this.prevPos[0])) === 12) {
-      debugger
+
       this.prevPos = this.pos;
       this.counter += 1;
       if (this.vel[0] < 0) {

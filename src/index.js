@@ -15,8 +15,12 @@ document.addEventListener("DOMContentLoaded", (e) => {
   const gameMenu = document.getElementById('menu-icon');
   const modalBackground = document.querySelector('.modal-background');
   const modal = document.querySelector('.modal');
+  const gameOverModalBackground = document.querySelector('.game-over-modal-background');
+  const gameOver = document.querySelector('.game-over');
   const exitButton = document.querySelector('.exit-button');
   const restartButton = document.querySelector('.restart-button');
+  const gameOverExitButton = document.querySelector('.game-over-exit-button');
+  const playAgainButton = document.querySelector('.play-again-button');
   
   const kanvas = document.getElementById("game-canvas");
   const cntx = kanvas.getContext("2d");
@@ -91,6 +95,37 @@ document.addEventListener("DOMContentLoaded", (e) => {
     modalBackground.classList.add('hidden');
     modal.classList.remove('fade-in');
     modal.classList.add('hidden');
+    kanvas.classList.remove('fade-in');
+    kanvas.classList.add('hidden');
+    zaGame.destroy();
+    setTimeout(() => {
+      kanvas.classList.remove('hidden');
+      kanvas.classList.add('fade-in');
+      zaGame.start();
+    }, 1000);
+  });
+
+  gameOverExitButton.addEventListener('click', () => {
+    gameOverModalBackground.classList.remove('fade-in');
+    gameOverModalBackground.classList.add('hidden');
+    gameOver.classList.remove('fade-in');
+    gameOver.classList.add('hidden');
+    kanvas.classList.remove('fade-in');
+    kanvas.classList.add('hidden');
+    gameMenu.classList.remove('fade-in');
+    gameMenu.classList.add('hidden');
+    zaGame.destroy();
+    setTimeout(() => {
+      menu.classList.remove('hidden');
+      menu.classList.add('fade-in');
+    }, 1000);
+  });
+
+  playAgainButton.addEventListener('click', () => {
+    gameOverModalBackground.classList.remove('fade-in');
+    gameOverModalBackground.classList.add('hidden');
+    gameOver.classList.remove('fade-in');
+    gameOver.classList.add('hidden');
     kanvas.classList.remove('fade-in');
     kanvas.classList.add('hidden');
     zaGame.destroy();

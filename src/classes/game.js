@@ -18,17 +18,19 @@ class Game {
     this.robo = new Robo({game: this});
     this.actionKeys = [];
     this.points = 0;
-    this.timer = 0;
+    this.timer = 60;
     this.paused = false;
     this.randomPos = this.randomPos.bind(this);
 
     this.keydownAction = this.keydownAction.bind(this);
     this.keyupAction = this.keyupAction.bind(this);
+
+    this.gameEnd = false;
   }
 
   timePassed() {
     if (!this.paused) {
-      setInterval(() => {this.timer += 1}, 1000);
+      setInterval(() => {this.timer -= 1}, 1000);
     }
   }
 
@@ -121,7 +123,8 @@ class Game {
   draw(cntx) {
     cntx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
     cntx.font = "100px Comic Sans MS";
-    cntx.fillStyle = "gray";
+    if (this.timer > 10) cntx.fillStyle = "gray";
+    else cntx.fillStyle = "red";
     cntx.textAlign = "left";
     cntx.globalAlpha = 0.2;
     cntx.fillText(`\u{1F553} ${this.showProperTime()}`, 240, 310);
@@ -144,17 +147,17 @@ class Game {
     cntx.textAlign = "right";
     cntx.fillText(`${this.points} \u{1F536}`, 870, 60);
     if (this.points === 100) {
-      this.NUM_GEESE = 8;
+      this.NUM_GEESE = 6;
       this.addGoose();
     } else if (this.points >= 500 && this.points < 600) {
       this.NUM_GEESE = 12;
       if (this.geese.length < 12) this.addGoose();
     } else if (this.points >= 2000 && this.points < 2100) {
-      this.NUM_GEESE = 20;
-      if (this.geese.length < 20) this.addGoose();
+      this.NUM_GEESE = 16;
+      if (this.geese.length < 16) this.addGoose();
     } else if (this.points >= 4000 && this.points < 4200) {
-      this.NUM_GEESE = 100;
-      if (this.geese.length < 100) this.addGoose();
+      this.NUM_GEESE = 25;
+      if (this.geese.length < 25) this.addGoose();
     }
     if (this.points === 100) {
       this.rocketMessage = true;

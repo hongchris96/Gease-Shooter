@@ -146,17 +146,19 @@ class Game {
     this.robo = new Robo({game: this});
     this.actionKeys = [];
     this.points = 0;
-    this.timer = 0;
+    this.timer = 60;
     this.paused = false;
     this.randomPos = this.randomPos.bind(this);
 
     this.keydownAction = this.keydownAction.bind(this);
     this.keyupAction = this.keyupAction.bind(this);
+
+    this.gameEnd = false;
   }
 
   timePassed() {
     if (!this.paused) {
-      setInterval(() => {this.timer += 1}, 1000);
+      setInterval(() => {this.timer -= 1}, 1000);
     }
   }
 
@@ -249,7 +251,8 @@ class Game {
   draw(cntx) {
     cntx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
     cntx.font = "100px Comic Sans MS";
-    cntx.fillStyle = "gray";
+    if (this.timer > 10) cntx.fillStyle = "gray";
+    else cntx.fillStyle = "red";
     cntx.textAlign = "left";
     cntx.globalAlpha = 0.2;
     cntx.fillText(`\u{1F553} ${this.showProperTime()}`, 240, 310);
@@ -272,17 +275,17 @@ class Game {
     cntx.textAlign = "right";
     cntx.fillText(`${this.points} \u{1F536}`, 870, 60);
     if (this.points === 100) {
-      this.NUM_GEESE = 8;
+      this.NUM_GEESE = 6;
       this.addGoose();
     } else if (this.points >= 500 && this.points < 600) {
       this.NUM_GEESE = 12;
       if (this.geese.length < 12) this.addGoose();
     } else if (this.points >= 2000 && this.points < 2100) {
-      this.NUM_GEESE = 20;
-      if (this.geese.length < 20) this.addGoose();
+      this.NUM_GEESE = 16;
+      if (this.geese.length < 16) this.addGoose();
     } else if (this.points >= 4000 && this.points < 4200) {
-      this.NUM_GEESE = 100;
-      if (this.geese.length < 100) this.addGoose();
+      this.NUM_GEESE = 25;
+      if (this.geese.length < 25) this.addGoose();
     }
     if (this.points === 100) {
       this.rocketMessage = true;
@@ -463,6 +466,10 @@ module.exports = Game;
 const Game = __webpack_require__(/*! ./game */ "./src/classes/game.js");
 
 let gameInterval;
+const gameOverModalBackground = document.querySelector('.game-over-modal-background');
+const gameOver = document.querySelector('.game-over');
+const gameOverHead = document.querySelector('h1.win-lose');
+const gameOverMessage = document.querySelector('p.game-over-message');
 
 class GameView {
   constructor(cntx) {
@@ -480,12 +487,41 @@ class GameView {
   }
 
   gameloop(time) {
+    // rocket velocity gets faster every new game, need a way to restart gameloop
     const timeDelta = time - this.lastTime;
     if (this.game !== null) {
       if (!this.game.paused) {
         this.game.checkCollision();
         this.game.moveObjects(timeDelta);
         this.game.draw(this.cntx);
+      }
+      if (this.game.timer === 0) { 
+          this.game.paused = true;
+          this.game.gameEnd = true;
+          let heading;
+          let gameMessage;
+          if (this.game.points >= 10000) {
+            heading = "You Win";
+            gameMessage = `Congrats! You have completed the game with ${this.game.points} points.`
+            gameOverHead.classList.remove('lose-only');
+            gameOverHead.classList.add('win-only');
+          } else if (this.game.points < 10000 && this.game.points > 7000) {
+            gameOverHead.classList.remove('win-only');
+            gameOverHead.classList.add('lose-only');
+            heading = "Game Over";
+            gameMessage = `Almost there but not quite, needed ${10000 - this.game.points} more points to win.`
+          } else {
+            gameOverHead.classList.remove('win-only');
+            gameOverHead.classList.add('lose-only');
+            heading = "Game Over";
+            gameMessage = `You need ${10000 - this.game.points} more points to win. Better luck next time.`
+          }
+          gameOverHead.textContent = heading;
+          gameOverMessage.textContent = gameMessage;
+          gameOverModalBackground.classList.remove('hidden');
+          gameOverModalBackground.classList.add('fade-in');
+          gameOver.classList.remove('hidden');
+          gameOver.classList.add('fade-in');
       }
     }
     this.lastTime = time;
@@ -564,7 +600,7 @@ class Goose {
     }
 
     if (Math.round(Math.abs(this.pos[0] - this.prevPos[0])) === 12) {
-      debugger
+
       this.prevPos = this.pos;
       this.counter += 1;
       if (this.vel[0] < 0) {
@@ -1030,8 +1066,12 @@ document.addEventListener("DOMContentLoaded", (e) => {
   const gameMenu = document.getElementById('menu-icon');
   const modalBackground = document.querySelector('.modal-background');
   const modal = document.querySelector('.modal');
+  const gameOverModalBackground = document.querySelector('.game-over-modal-background');
+  const gameOver = document.querySelector('.game-over');
   const exitButton = document.querySelector('.exit-button');
   const restartButton = document.querySelector('.restart-button');
+  const gameOverExitButton = document.querySelector('.game-over-exit-button');
+  const playAgainButton = document.querySelector('.play-again-button');
   
   const kanvas = document.getElementById("game-canvas");
   const cntx = kanvas.getContext("2d");
@@ -1106,6 +1146,37 @@ document.addEventListener("DOMContentLoaded", (e) => {
     modalBackground.classList.add('hidden');
     modal.classList.remove('fade-in');
     modal.classList.add('hidden');
+    kanvas.classList.remove('fade-in');
+    kanvas.classList.add('hidden');
+    zaGame.destroy();
+    setTimeout(() => {
+      kanvas.classList.remove('hidden');
+      kanvas.classList.add('fade-in');
+      zaGame.start();
+    }, 1000);
+  });
+
+  gameOverExitButton.addEventListener('click', () => {
+    gameOverModalBackground.classList.remove('fade-in');
+    gameOverModalBackground.classList.add('hidden');
+    gameOver.classList.remove('fade-in');
+    gameOver.classList.add('hidden');
+    kanvas.classList.remove('fade-in');
+    kanvas.classList.add('hidden');
+    gameMenu.classList.remove('fade-in');
+    gameMenu.classList.add('hidden');
+    zaGame.destroy();
+    setTimeout(() => {
+      menu.classList.remove('hidden');
+      menu.classList.add('fade-in');
+    }, 1000);
+  });
+
+  playAgainButton.addEventListener('click', () => {
+    gameOverModalBackground.classList.remove('fade-in');
+    gameOverModalBackground.classList.add('hidden');
+    gameOver.classList.remove('fade-in');
+    gameOver.classList.add('hidden');
     kanvas.classList.remove('fade-in');
     kanvas.classList.add('hidden');
     zaGame.destroy();

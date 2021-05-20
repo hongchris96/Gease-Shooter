@@ -57,6 +57,75 @@ body {
   bottom: 70px;
 }
 
+.game-over-modal-background {
+    background-color: rgba(255, 255, 255, 0.399);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+}
+
+.game-over {
+    position: absolute;
+    width: 450px;
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    background-color: rgba(255, 255, 255, 0.954);
+    border-radius: 5px;
+    box-shadow: 0 0 20px rgb(203, 203, 203);
+    z-index: 10;
+}
+
+
+.game-over > h1.win-lose {
+    font-size: 28px;
+    margin-bottom: 30px;
+}
+
+.game-over > .lose-only {
+    color: rgb(191, 0, 0);
+}
+
+.game-over > .win-only {
+    color: rgb(137, 213, 24);
+}
+
+.game-over > p.game-over-message {
+    font-size: 16px;
+    text-align: center;
+    line-height: 1.4;
+    width: 80%;
+    margin-bottom: 70px;
+}
+
+.game-over > p.play-again-button {
+    position: absolute;
+    bottom: 110px;
+    cursor: pointer;
+}
+.game-over > p.play-again-button:hover {
+    font-size: 20px;
+    text-shadow: 0 0 10px rgb(21, 255, 53);
+    transition: 0.3s;
+}
+
+.game-over > p.game-over-exit-button {
+    position: absolute;
+    cursor: pointer;
+    bottom: 70px;
+}
+.game-over > p.game-over-exit-button:hover {
+    font-size: 20px;
+    text-shadow: 0 0 10px rgb(21, 255, 53);
+    transition: 0.3s;
+}
+
 #menu-icon {
   position: absolute;
   top: 18px;
