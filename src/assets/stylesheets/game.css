@@ -266,13 +266,14 @@ article.controls > h1 {
 }
 
 article.controls > p {
-  line-height: 1.4;
+  font-size: 15px;
+  line-height: 1.5;
   text-align: center;
   width: 800px;
 }
 
 article.controls > img {
-  width: 50%;
+  width: 45%;
   height: auto;
 }
 
