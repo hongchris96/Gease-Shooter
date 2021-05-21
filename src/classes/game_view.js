@@ -1,10 +1,11 @@
 const Game = require('./game');
 
-let gameInterval;
 const gameOverModalBackground = document.querySelector('.game-over-modal-background');
 const gameOver = document.querySelector('.game-over');
 const gameOverHead = document.querySelector('h1.win-lose');
 const gameOverMessage = document.querySelector('p.game-over-message');
+
+let animFram;
 
 class GameView {
   constructor(cntx) {
@@ -22,7 +23,6 @@ class GameView {
   }
 
   gameloop(time) {
-    // rocket velocity gets faster every new game, need a way to restart gameloop
     const timeDelta = time - this.lastTime;
     if (this.game !== null) {
       if (!this.game.paused) {
@@ -60,7 +60,7 @@ class GameView {
       }
     }
     this.lastTime = time;
-    requestAnimationFrame(this.gameloop.bind(this));
+    animFram = requestAnimationFrame(this.gameloop.bind(this));
   }
 
   pause() {
@@ -68,6 +68,7 @@ class GameView {
   }
 
   destroy() {
+    cancelAnimationFrame(animFram);
     this.game.removeEventListener4ThisGame();
     this.game = null;
   }
